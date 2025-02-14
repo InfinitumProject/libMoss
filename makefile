@@ -1,5 +1,7 @@
 modules = files
 
+# Reminder to self on how to make it use libs in custom directory
+# g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
 
 .PHONY: BuildObjects
 BuildObjects:

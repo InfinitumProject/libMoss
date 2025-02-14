@@ -5,8 +5,13 @@
 #include <filesystem>
 
 namespace MissMoss{
-    namespace Executable{
-        std::string getExe();
+    namespace Files{
+        namespace Executable{
+            std::string getExe();
+        }
+        namespace Text{
+            std::string readFullFile(std::string fileToRead);
+        }
     }
 }
 #elif _WIN32
