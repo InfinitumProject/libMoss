@@ -1,4 +1,5 @@
-modules = files
+modules = files script
+tests = script
 
 # Reminder to self on how to make it use libs in custom directory
 # g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
@@ -14,3 +15,8 @@ BuildObjects:
 BuildLib: BuildObjects
 	g++ -shared -o ./build/lib/libMoss.so ./build/objects/*.o
 
+.PHONY: BuildTests
+BuildTests: BuildLib
+	for current_module in ${tests}; do \
+		g++ ./tests/$$current_module/test.cpp -Wl,-rpath,../../lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
+	done

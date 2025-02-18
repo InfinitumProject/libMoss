@@ -7,6 +7,7 @@
         "cstddef": "cpp",
         "cstdio": "cpp",
         "cstdlib": "cpp",
+        "cstring": "cpp",
         "ctime": "cpp",
         "cwchar": "cpp",
         "cwctype": "cpp",
@@ -47,14 +48,13 @@
         "new": "cpp",
         "numbers": "cpp",
         "ostream": "cpp",
+        "semaphore": "cpp",
         "sstream": "cpp",
         "stdexcept": "cpp",
-        "streambuf": "cpp",
-        "cinttypes": "cpp",
-        "typeinfo": "cpp",
-        "cstring": "cpp",
-        "semaphore": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "streambuf": "cpp",
+        "thread": "cpp",
+        "cinttypes": "cpp",
+        "typeinfo": "cpp"
     }
 }
