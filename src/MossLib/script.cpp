@@ -1,15 +1,16 @@
+#include "../../include/MissMoss/script.hpp"
+#include "../../include/MissMoss/types.hpp"
+
 #ifdef __linux__
 #include <string>
 #include <filesystem>
 #include <fstream>
-#include "../../include/MissMoss/script.hpp"
-#include "../../include/MissMoss/types.hpp"
 
 namespace MissMoss::Script {
-    tokens tokenize(std::string input, char delim, bool append_delim){
-        tokens output;
+    MissMoss::Types::tokens tokenize(std::string input, char delim, bool append_delim){
+        MissMoss::Types::tokens output;
         int last = 0, current;
-        for (int i = 0; i < input.length(); i++){
+        for (int i = 0; i <= input.length(); i++){
             if (input[i] == delim){
                 current = i;
                 output.push_back(input.substr(last, current - last));
@@ -22,9 +23,9 @@ namespace MissMoss::Script {
         return output;
     }
 
-    void tokenize(std::string input, char delim, bool append_delim, tokens &output){
+    void tokenize(std::string input, char delim, bool append_delim, MissMoss::Types::tokens &output){
         int last = 0, current;
-        for (int i = 0; i < input.length(); i++){
+        for (int i = 0; i <= input.length(); i++){
             if (input[i] == delim){
                 current = i;
                 output.push_back(input.substr(last, current - last));
@@ -37,10 +38,10 @@ namespace MissMoss::Script {
         output.back() += delim;
     }
 
-    tokens multiTokenize(std::string input, std::vector<char> delim){
-        tokens output;
+    MissMoss::Types::tokens multiTokenize(std::string input, std::vector<char> delim){
+        MissMoss::Types::tokens output;
         int last = 0, current;
-        for (int i = 0; i < input.length(); i++){
+        for (int i = 0; i <= input.length(); i++){
             for (char del : delim){
                 if (input[i] == del){
                     current = i;
@@ -49,13 +50,13 @@ namespace MissMoss::Script {
                 }
             }
         }
-        return restringTokens(output);
+        return processEscapes(restringTokens(output),(std::map<char,char>){{'n','\n'},{'t','\t'}});
     }
 
-    void multiTokenize(std::string input, std::vector<char> delim, tokens &output){
-        tokens outputBuffer;
+    void multiTokenize(std::string input, std::vector<char> delim, MissMoss::Types::tokens &output){
+        MissMoss::Types::tokens outputBuffer;
         int last = 0, current;
-        for (int i = 0; i < input.length(); i++){
+        for (int i = 0; i <= input.length(); i++){
             for (char del : delim){
                 if (input[i] == del){
                     current = i;
@@ -64,11 +65,11 @@ namespace MissMoss::Script {
                 }
             }
         }
-        restringTokens(outputBuffer, output);
+        processEscapes(restringTokens(outputBuffer),(std::map<char,char>){{'n','\n'},{'t','\t'}},output);
     }
 
-    tokens restringTokens(tokens &_tokens){
-        tokens output;
+    MissMoss::Types::tokens restringTokens(MissMoss::Types::tokens &_tokens){
+        MissMoss::Types::tokens output;
         bool isInQuotes = false;
         std::string buffer;
         for (int i = 0; i < _tokens.size(); i++){
@@ -76,7 +77,7 @@ namespace MissMoss::Script {
                 if (isInQuotes){
                     isInQuotes = false;
                     buffer.append(_tokens[i]);
-                    output.push_back(buffer);
+                    output.push_back(buffer.substr(1,buffer.length()-2));
                     buffer.clear();
                 } else {
                     isInQuotes = true;
@@ -91,7 +92,7 @@ namespace MissMoss::Script {
         return output;
     }
 
-    void restringTokens(tokens &_tokens, tokens &output){
+    void restringTokens(MissMoss::Types::tokens &_tokens, MissMoss::Types::tokens &output){
         bool isInQuotes = false;
         std::string buffer;
         for (int i = 0; i < _tokens.size(); i++){
@@ -99,7 +100,7 @@ namespace MissMoss::Script {
                 if (isInQuotes){
                     isInQuotes = false;
                     buffer.append(_tokens[i]);
-                    output.push_back(buffer);
+                    output.push_back(buffer.substr(1,buffer.length()-2));
                     buffer.clear();
                 } else {
                     isInQuotes = true;
@@ -113,39 +114,85 @@ namespace MissMoss::Script {
         }
     }
 
-    template <typename T1,typename T2>
-    std::vector<T1> getMapKeys(std::map<T1,T2> &input){
-        std::vector<T1> keys;
+    template <typename U1,typename U2>
+    std::vector<U1> getMapKeys(std::map<U1,U2> &input){
+        std::vector<U1> keys;
         for (auto it = input.begin(); it != input.end(); ++it){
             // Add the key to the vector
             keys.push_back(it->first);
         }
         return keys;
     }
+
+    template <typename U>
+    auto vectorContentCheck(std::vector<U> &vector, U value){
+        for (auto it = vector.begin(); it != vector.end(); it++){
+            if (it == value){
+                return it;
+            } else {
+                return NULL;
+            }
+        }
+    }
+
+    Types::tokens processEscapes(Types::tokens inputs, std::map<char,char> escapeMappings){
+        for (std::string str : inputs){
+            for (int i = 0; i < str.length(); i++){
+                if (str[i] == '\\'){
+                    i = escapeMappings[str[i]];
+                    str.erase(i+1,1);
+                }
+            }
+        }
+        return inputs;
+    }
+
+    void processEscapes(Types::tokens inputs, std::map<char,char> escapeMappings, Types::tokens &output){
+        for (std::string str : inputs){
+            for (int i = 0; i < str.length(); i++){
+                if (str[i] == '\\'){
+                    i = escapeMappings[str[i]];
+                    str.erase(i+1,1);
+                }
+            }
+        }
+        output = inputs;
+    }
 }
 
 MissMoss::Script::ScriptProcessor::ScriptProcessor(){
-    this->delims = {';','(',')',',','"',' ','{','}','[',']','\''};
+    this->delims = {';','(',')',',','"',' ','{','}','[',']','\'','\n'};
 }
-int MissMoss::Script::ScriptProcessor::ProcessLine(std::string lineToProcess){
+void MissMoss::Script::ScriptProcessor::ProcessLine(std::string lineToProcess){
     if (lineToProcess[0] == '#'){
         std::string *buffer = new std::string(lineToProcess.substr(1));
         std::pair<std::string,std::string> *settingData = new std::pair<std::string,std::string>({tokenize(*buffer,' ',false)[0],tokenize(*buffer,' ',false)[1]});
         this->setSetting(*settingData);
         delete settingData;
         delete buffer;
-        return 1;
     } else {
-        tokens tokenizedLine;
+        MissMoss::Types::tokens tokenizedLine;
         multiTokenize(lineToProcess,this->delims,tokenizedLine);
+        for (auto it = tokenizedLine.begin(); it != tokenizedLine.end(); it++){
+            if (*it == "("){
+                MissMoss::Types::tokens _args;
+                int i = 1;
+                while (*(it+i) != ")"){
+                    if (*(it+i) != ","){
+                        _args.push_back(*(it+i));
+                    }
+                    i++;
+                }
+                this->functionMappings[*(it-1)](_args);
+            }
+        }
     }
 
 }
-int MissMoss::Script::ScriptProcessor::ProcessLines(tokens linesToProcess){
+void MissMoss::Script::ScriptProcessor::ProcessLines(MissMoss::Types::tokens linesToProcess){
     for (std::string line : linesToProcess){
         this->ProcessLine(line);
     }
-    return 1;
 }
 void MissMoss::Script::ScriptProcessor::setSetting(std::pair<std::string,std::string> setting){
     this->settings[setting.first] = setting.second;
@@ -167,7 +214,7 @@ void MissMoss::Script::ScriptProcessor::dumpSettings(std::ostream &stream, const
     stream << temp << end;
 }
 
-void MissMoss::Script::ScriptProcessor::registerFunction(std::string alias, std::function<int(void*)> functionRef){
+void MissMoss::Script::ScriptProcessor::registerFunction(std::string alias, MissMoss::Types::function functionRef){
     this->functionMappings[alias] = functionRef;
 }
 

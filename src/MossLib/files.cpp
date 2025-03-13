@@ -1,8 +1,9 @@
+#include "../../include/MissMoss/files.hpp"
+
 #ifdef __linux__
 #include <string>
 #include <filesystem>
 #include <fstream>
-#include "../../include/MissMoss/files.hpp"
 
 std::string MissMoss::Files::Executable::getExe(){
     std::string exePath = std::filesystem::read_symlink("/proc/self/exe");

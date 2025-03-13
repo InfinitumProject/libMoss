@@ -1,1 +1,1 @@
-print("this is a test");
+print("this is a test\n","this is a second test\n");

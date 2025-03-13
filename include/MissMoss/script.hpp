@@ -18,7 +18,7 @@ namespace MissMoss{
         * @param delim The deliminator to split it by.
         * @param append_delim Whether to append the deliminator character to the end of the last string.
         */
-        tokens tokenize(std::string input, char delim, bool append_delim);
+        MissMoss::Types::tokens tokenize(std::string input, char delim, bool append_delim);
 
         /**
         * @brief Splits a string by a deliminator.
@@ -28,7 +28,7 @@ namespace MissMoss{
         * @param append_delim Whether to append the deliminator character to the end of the last string.
         * @param &output The variable to assign the result to.
         */
-        void tokenize(std::string input, char delim, bool append_delim, tokens &output);
+        void tokenize(std::string input, char delim, bool append_delim, MissMoss::Types::tokens &output);
 
         /**
         * @brief Splits a string by multiple deliminators.
@@ -36,7 +36,7 @@ namespace MissMoss{
         * @param input The string to split.
         * @param delim A vector of deliminators to split it by.
         */
-        tokens multiTokenize(std::string input, std::vector<char> delim);
+        MissMoss::Types::tokens multiTokenize(std::string input, std::vector<char> delim);
 
         /**
         * @brief Splits a string by a deliminator.
@@ -45,22 +45,22 @@ namespace MissMoss{
         * @param delim A vector of deliminators to split it by.
         * @param &output The variable to assign the result to.
         */
-        void multiTokenize(std::string input, std::vector<char> delim, tokens &output);
+        void multiTokenize(std::string input, std::vector<char> delim, MissMoss::Types::tokens &output);
 
         /**
          * @brief Used to clump strings back into a singular token.
          * 
-         * @param inputs A vector of tokens to attempt to restring.
+         * @param inputs A vector of MissMoss::Types::tokens to attempt to restring.
          */
-        tokens restringTokens(tokens &inputs);
+        MissMoss::Types::tokens restringTokens(MissMoss::Types::tokens &inputs);
 
         /**
          * @brief Used to clump strings back into a singular token.
          * 
-         * @param inputs A vector of tokens to attempt to restring.
+         * @param inputs A vector of MissMoss::Types::tokens to attempt to restring.
          * @param output A vector to output the function to.
          */
-        void restringTokens(tokens &inputs, tokens &output);
+        void restringTokens(MissMoss::Types::tokens &inputs, MissMoss::Types::tokens &output);
         
         /**
          * @brief Runs through a map and outputs the keys.
@@ -69,8 +69,26 @@ namespace MissMoss{
          * @param input A map to run through
          * @returns A vector of keys. 
          */
-        template <typename T1,typename T2>
-        std::vector<T1> getMapKeys(std::map<T1,T2> &input);
+        template <typename U1,typename U2>
+        std::vector<U1> getMapKeys(std::map<U1,U2> &input);
+
+        /**
+         * @brief Processes a vector of strings to inject special escape code characters into the sequence.
+         * 
+         * @param inputs A vector of strings to check and inject into.
+         * @param escapeMappings A std::map<char,char> of the performed translations on the escape characters.
+         * @returns A vector of strings with injected special characters.
+         */
+        MissMoss::Types::tokens processEscapes(MissMoss::Types::tokens inputs, std::map<char,char> escapeMappings);
+
+        /**
+         * @brief Processes a vector of strings to inject special escape code characters into the sequence.
+         * 
+         * @param inputs A vector of strings to check and inject into.
+         * @param escapeMappings A std::map<char,char> of the performed translations on the escape characters.
+         * @param output A vector to output the new vector of strings into. 
+         */
+        void processEscapes(MissMoss::Types::tokens inputs, std::map<char,char> escapeMappings, MissMoss::Types::tokens &output);
 
         /**
          * @brief Constructs an instance of the script processor.
@@ -88,13 +106,13 @@ namespace MissMoss{
                  * 
                  * @param lineToProcess A string containing a line from a script.
                  */
-                int ProcessLine(std::string lineToProcess);
+                void ProcessLine(std::string lineToProcess);
                 /**
                  * @brief Processes multiple lines of script organized in a vector in order of application.
                  * 
                  * @param linesToProcess A vecor containing strings to process.
                  */
-                int ProcessLines(tokens linesToProcess);
+                void ProcessLines(MissMoss::Types::tokens linesToProcess);
                 /**
                  * @brief Takes a pair of settings and attempts to change a setting.
                  * 
@@ -120,7 +138,19 @@ namespace MissMoss{
                  * @param alias The text used to call the function in the script.
                  * @param functionRef A function reference to be called.
                  */
-                void registerFunction(std::string alias, std::function<int(void*)> functionRef);
+                void registerFunction(std::string alias, MissMoss::Types::function functionRef);
+
+                /**
+                 * @brief Holds deliminators to split scripts by, you probably don't 
+                 * @brief wanna change this unless you really know what you're doing.
+                 */
+                std::vector<char> delims;
+
+                /**
+                 * @brief Holds the script level which tweaks the level of the scripting system.
+                 */
+                int level;
+
             protected:
                 /**
                  * @brief Contains the exceptions that are used for error handling here. Pretty standard stuff.
@@ -141,15 +171,11 @@ namespace MissMoss{
                             }
                     };*/
                 };
+                
                 /**
                  * @brief Holds a map of exposed variable names and pointers to their values
                  */
                 std::map<std::string,void*> exposedVariables;
-
-                /**
-                 * @brief Holds the script level which tweaks the level of the scripting system.
-                 */
-                int level;
 
                 /**
                  * @brief Holds data for settings in a map.
@@ -160,13 +186,7 @@ namespace MissMoss{
                  * @brief Holds mappings for functions, though all functions will only be able to
                  * @brief take a pointer to data as an input and return an int. I'll work on fixing that.
                  */
-                std::map<std::string,std::function<int(void*)>> functionMappings;
-
-                /**
-                 * @brief Holds deliminators to split scripts by, you probably don't 
-                 * @brief wanna change this unless you really know what you're doing.
-                 */
-                std::vector<char> delims;
+                std::map<std::string,MissMoss::Types::function> functionMappings;
         };
     }
 }
