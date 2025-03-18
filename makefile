@@ -10,7 +10,7 @@ ValidateDirStruct:
 		mkdir ./build; \
 	fi; \
 	for dir in lib objects tests; do \
-		if [ ! -d "./build/'$$dir'" ]; then \
+		if [ ! -d "./build/$$dir" ]; then \
 			mkdir ./build/$$dir; \
 		fi; \
 	done;
@@ -29,7 +29,7 @@ BuildLib: BuildObjects ValidateDirStruct
 
 BuildTests: BuildLib ValidateDirStruct
 	for current_module in ${tests}; do \
-		if [ ! -d "./build/tests/'$$current_module'" ]; then \
+		if [ ! -d "./build/tests/$$current_module" ]; then \
 			mkdir ./build/tests/$$current_module; \
 		fi; \
 		g++ ./tests/$$current_module/test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
