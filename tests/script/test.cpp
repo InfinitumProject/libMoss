@@ -23,7 +23,7 @@ MissMoss::Types::tokens stringReplaceTest(MissMoss::Types::tokens input, std::ma
 
 int main(int argc, char *argv[]){
     MissMoss::Script::ScriptProcessor scripter;
-    scripter.registerFunction("print",[](std::vector<std::string> str){for (std::string a : str){std::cout<<a;}});
+    scripter.registerFunction("print",[](MissMoss::Types::ioVarianceVector _inputs){for (MissMoss::Types::ioVarianceSinglet a : _inputs){std::cout<<a;} return 0;});
     scripter.ProcessLine(MissMoss::Files::Text::readFullFile(argv[1]));
     for (std::string str : stringReplaceTest(std::vector<std::string>({"This is a newline test.\\n","This concludes the newline test."}),{{'n','\n'}})){
         std::cout << str;

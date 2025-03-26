@@ -1,5 +1,5 @@
-modules = files script cli
-tests = script cli
+modules = files script
+tests = script
 
 # Reminder to self on how to make it use libs in custom directory
 # g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
@@ -34,3 +34,10 @@ BuildTests: BuildLib ValidateDirStruct
 		fi; \
 		g++ ./tests/$$current_module/test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
 	done
+
+.PHONY: SBRun
+SBRun: Sandbox/SB
+	./SB
+
+Sandbox/SB: Sandbox/sandbox.cpp
+	g++ ./Sandbox/sandbox.cpp -o ./Sandbox/SB
