@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 #include <variant>
-#include "../Nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 namespace MissMoss {
 

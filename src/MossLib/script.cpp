@@ -1,5 +1,5 @@
-#include "../../include/MissMoss/script.hpp"
-#include "../../include/MissMoss/types.hpp"
+#include "../../include/MissMoss/MossLib/script.hpp"
+#include "../../include/MissMoss/MossLib/types.hpp"
 
 #ifdef __linux__
 #include <string>
