@@ -3,7 +3,7 @@
 #include "../../include/MissMoss/MossLib/types.hpp"
 #include <iostream>
 
-MissMoss::Types::tokens stringReplaceTest(MissMoss::Types::tokens input, std::map<char,char> replace){
+/*MissMoss::Types::tokens stringReplaceTest(MissMoss::Types::tokens input, std::map<char,char> replace){
     MissMoss::Types::tokens output = input;
     for (std::string str : output){
         for (std::pair<char,char> pair : replace){
@@ -19,13 +19,15 @@ MissMoss::Types::tokens stringReplaceTest(MissMoss::Types::tokens input, std::ma
         }
     }
     return output;
-}
+}*/
 
 int main(int argc, char *argv[]){
     MissMoss::Script::ScriptProcessor scripter;
-    scripter.registerFunction("print",[](MissMoss::Types::ioVarianceVector _inputs){for (MissMoss::Types::ioVarianceSinglet a : _inputs){std::cout<<a;} return 0;});
+    std::cout << "Registering function: print" << std::endl;
+    scripter.registerFunction("print",[](MissMoss::Types::tokens _inputs){for (std::string a : _inputs){std::cout<<a;} return std::string("EEEE");});
+    std::cout << "Attempting to print line from file: " << argv[1] << std::endl;
     scripter.ProcessLine(MissMoss::Files::Text::readFullFile(argv[1]));
-    for (std::string str : stringReplaceTest(std::vector<std::string>({"This is a newline test.\\n","This concludes the newline test."}),{{'n','\n'}})){
+    /*for (std::string str : stringReplaceTest(std::vector<std::string>({"This is a newline test.\\n","This concludes the newline test."}),{{'n','\n'}})){
         std::cout << str;
     }
     std::vector<std::string> a = {"000\\x00\\x0","0\\x00\\x00\\x"};
@@ -41,5 +43,5 @@ int main(int argc, char *argv[]){
 
     for (std::string str : stringReplaceTest({"000\\x00\\x0","0\\x00\\x00\\x"},{{'x','1'}})){
         std::cout << str << std::endl;
-    }
+    }*/
 }

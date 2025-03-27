@@ -50,7 +50,8 @@ namespace MissMoss::Script {
                 }
             }
         }
-        return processEscapes(restringTokens(output),(std::map<char,char>){{'n','\n'},{'t','\t'}});
+        //return processEscapes(restringTokens(output),(std::map<char,char>){{'n','\n'},{'t','\t'}});
+        return restringTokens(output);
     }
 
     void multiTokenize(std::string input, std::vector<char> delim, MissMoss::Types::tokens &output){
@@ -65,7 +66,8 @@ namespace MissMoss::Script {
                 }
             }
         }
-        processEscapes(restringTokens(outputBuffer),(std::map<char,char>){{'n','\n'},{'t','\t'}},output);
+        //processEscapes(restringTokens(outputBuffer),(std::map<char,char>){{'n','\n'},{'t','\t'}},output);
+        restringTokens(outputBuffer,output);
     }
 
     MissMoss::Types::tokens restringTokens(MissMoss::Types::tokens &_tokens){
@@ -161,19 +163,25 @@ namespace MissMoss::Script {
 }
 
 MissMoss::Script::ScriptProcessor::ScriptProcessor(){
-    this->delims = {';','(',')',',','"',' ','{','}','[',']','\'','\n'};
+    this->delims = {';','(',')',',','"',' ','{','}','[',']','\''/*,'\n'*/};
 }
 void MissMoss::Script::ScriptProcessor::ProcessLine(std::string lineToProcess){
+    std::cout << "Running preprocessor check..." << std::endl;
     if (lineToProcess[0] == '#'){
-        std::string *buffer = new std::string(lineToProcess.substr(1));
-        std::pair<std::string,std::string> *settingData = new std::pair<std::string,std::string>({tokenize(*buffer,' ',false)[0],tokenize(*buffer,' ',false)[1]});
-        this->setSetting(*settingData);
-        delete settingData;
-        delete buffer;
+        std::cout << "Found preprocessor line: " << lineToProcess << std::endl;
+        std::string buffer = (lineToProcess.substr(1));
+        std::pair<std::string,std::string> settingData({tokenize(buffer,' ',false)[0],tokenize(buffer,' ',false)[1]});
+        this->setSetting(settingData);
+        //delete settingData;
+        //delete buffer;
     } else {
+        std::cout << "Found script line, processing now..." << std::endl;
         MissMoss::Types::tokens tokenizedLine;
+        std::cout << "Attempting multitokenization now..." << std::endl;
         multiTokenize(lineToProcess,this->delims,tokenizedLine);
+        std::cout << "Iterating through tokens now..." << std::endl;
         for (auto it = tokenizedLine.begin(); it != tokenizedLine.end(); it++){
+            std::cout << "Processing token: " << *it << std::endl;
             if (*it == "("){
                 MissMoss::Types::tokens _args;
                 int i = 1;
@@ -182,6 +190,12 @@ void MissMoss::Script::ScriptProcessor::ProcessLine(std::string lineToProcess){
                         _args.push_back(*(it+i));
                     }
                     i++;
+                    if (*(it+i) == "\n"){
+                        std::cout << "Newline found..." << std::endl;
+                    }
+                }
+                for (std::string str : _args){
+                    std::cout << "Found arg: " << str << std::endl;
                 }
                 this->functionMappings[*(it-1)](_args);
             }
