@@ -1,6 +1,6 @@
-#include "../../include/MissMoss/script.hpp"
-#include "../../include/MissMoss/files.hpp"
-#include "../../include/MissMoss/types.hpp"
+#include "../../include/MissMoss/MossLib/script.hpp"
+#include "../../include/MissMoss/MossLib/files.hpp"
+#include "../../include/MissMoss/MossLib/types.hpp"
 #include <iostream>
 
 MissMoss::Types::tokens stringReplaceTest(MissMoss::Types::tokens input, std::map<char,char> replace){

@@ -4,6 +4,7 @@
 #include <string>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 
 namespace MissMoss {
     namespace Files {
@@ -31,9 +32,92 @@ namespace MissMoss {
             return fullFile;
         }
 
+        byte::byte(){
+            this->data = 0;
+        }
+
+        byte::byte(int _const){
+            if (_const <= 0b11111111){
+                this->data = _const;
+            } else {
+                throw byte::overflowError("Constructor (int): value exceeds 255.");
+            }
+        }
+
+        byte::byte(int* _const){
+            if ((_const[0] <= 0b1111) && (_const[1] <= 0b1111)){
+                this->data = ((_const[0] << 4) || (_const[1]));
+            } else {
+                throw byte::overflowError("Constructor (int[2]): one of the values exceeds 15.");
+            }
+        }
+
+        byte::byte(int _const1, int _const2){
+            if ((_const1 <= 0b1111) && (_const2 <= 0b1111)){
+                this->data = ((_const1 << 4) || (_const2));
+            } else {
+                throw byte::overflowError("Constructor (int,int): one of the values exceeds 15.");
+            }
+        }
+
+        byte::byte(std::pair<int,int> _const){
+            if ((_const.first <= 0b1111) && (_const.second <= 0b1111)){
+                this->data = ((_const.first << 4) || (_const.second));
+            } else {
+                throw byte::overflowError("Constructor (std::pair<int,int>): one of the values exceeds 15.");
+            }
+        }
+
+        byte::operator int(){
+            return this->data;
+        }
+
+        byte::operator char(){
+            return (char)this->data;
+        }
+
+        byte::operator std::string(){
+            char output[2];
+            std::function<char(int)> handler = [](int in){
+                return byteCharMappings[in];
+            };
+            output[0] = byteCharMappings[((this->data) && 0b11110000) >> 4];
+            output[1] = byteCharMappings[((this->data) && 0b00001111)];
+            return output;
+        }
+
+        byte &byte::operator++(){
+            return (*this)-1;
+        }
+        
+        byte byte::operator++(int){
+            return *this;
+            (*this)++;
+        }
+        
+        byte &byte::operator--(){
+            return (*this)-1;
+        }
+        
+        byte byte::operator--(int){
+            return *this;
+            (*this)--;
+        }
+        
+        byte &byte::operator+(int _value){
+            this->data+_value;
+            return *this;
+        }
+        
+        byte &byte::operator-(int _value){
+            this->data-_value;
+            return *this;
+        }
+        
+
         void bytes::revalidate(){
             for (bytes::iterator it = this->begin(); it != this->end(); it++){
-                while (*it > 15){
+                while ((int)*it > 15){
                     *it - 16;
                     *(it+1)++;
                 }
@@ -42,96 +126,29 @@ namespace MissMoss {
         }
 
         bytes::bytes(){
-
+            this->data.push_back(byte());
         }
 
-        bytes::bytes(int _construct){
+        bytes::bytes(byte _construct){
             this->data.push_back(_construct);
             this->revalidate();
         }
 
-        bytes::bytes(std::vector<int> _construct){
+        bytes::bytes(std::vector<byte> _construct){
             this->data = _construct;
             this->revalidate();
         }
 
-        bytes::bytes(std::vector<char> _construct){
-            for (char data : _construct){
-                this->data.push_back(data);
-            }
-            this->revalidate();
-        }
-
-        std::string bytes::to_string(){
+        bytes::operator std::string() {
             this->revalidate();
             std::string output;
-            for (int data : this->data){
-                switch (data)
-                {
-                    case 0:
-                    output.append("0");
-                    break;
-                    case 1:
-                    output.append("1");
-                    break;
-                    case 2:
-                    output.append("2");
-                    break;
-                    case 3:
-                    output.append("3");
-                    break;
-                    case 4:
-                    output.append("4");
-                    break;
-                    case 5:
-                    output.append("5");
-                    break;
-                    case 6:
-                    output.append("6");
-                    break;
-                    case 7:
-                    output.append("7");
-                    break;
-                    case 8:
-                    output.append("8");
-                    break;
-                    case 9:
-                    output.append("9");
-                    break;
-                    case 10:
-                    output.append("A");
-                    break;
-                    case 11:
-                    output.append("B");
-                    break;
-                    case 12:
-                    output.append("C");
-                    break;
-                    case 13:
-                    output.append("D");
-                    break;
-                    case 14:
-                    output.append("E");
-                    break;
-                    case 15:
-                    output.append("F");
-                    break;
-                default:
-                    break;
-                }
+            for (byte data : this->data){
+                output.append(data);
             }
-        }
+            return output;
+        }   
 
-        bytes::operator char*(){
-            this->revalidate();
-            char *returnVal;
-            for (char ch : std::string(*this)){
-                returnVal[sizeof(returnVal)] = ch;
-            }
-            return returnVal;
-        }
-
-        int &bytes::operator[](int posToCheck){
+        byte &bytes::operator[](int posToCheck){
             this->revalidate();
             return this->data[posToCheck];
         }
@@ -201,7 +218,7 @@ namespace MissMoss {
             return bytes::iterator(this->_source, this->position - _amount);
         }
 
-        int &bytes::iterator::operator*(){
+        byte &bytes::iterator::operator*(){
             return (*(this->_source))[this->position];
         }
 

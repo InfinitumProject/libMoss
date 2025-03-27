@@ -4,6 +4,7 @@
 #include <string>
 #include <filesystem>
 #include <vector>
+#include <map>
 
 namespace MissMoss{
     namespace Files{
@@ -23,18 +24,45 @@ namespace MissMoss{
              */
             std::string readFullFile(std::string fileToRead);
         }
+        std::map<int,char> byteCharMappings = {{0,'0'},{1,'1'},{2,'2'},{3,'3'},{4,'4'},{5,'5'},{6,'6'},{7,'7'},{8,'8'},{9,'9'},{10,'A'},{11,'B'},{12,'C'},{13,'D'},{14,'E'},{15,'F'}};
+        class byte {
+            int data;
+            public:
+
+            class overflowError : public std::overflow_error {
+                public:
+                overflowError(const std::string &message) : std::overflow_error(message) {
+                    this->what();
+                }
+                const char *what() const noexcept override {
+                    return "MissMoss::Files::bytes::byte\nError: Overflow Error on byte construction\n";
+                }
+            };
+            
+            byte();
+            byte(int);
+            byte(int[2]);
+            byte(int,int);
+            byte(std::pair<int,int>);
+            operator std::string();
+            operator int();
+            operator char();
+            byte &operator++();
+            byte operator++(int);
+            byte &operator--();
+            byte operator--(int);
+            byte &operator+(int);
+            byte &operator-(int);
+        };
         class bytes {
-            std::vector<int> data;
+            std::vector<byte> data;
             void revalidate();
             public:
             bytes();
-            bytes(int);
-            bytes(std::vector<int>);
-            bytes(std::vector<char>);
-            operator std::vector<int>();
-            std::string to_string();
-            operator char*();
-            int &operator[](int);
+            bytes(byte);
+            bytes(std::vector<byte>);
+            operator std::string();
+            byte &operator[](int);
             int size();
             class iterator {
                 int position;
@@ -52,7 +80,7 @@ namespace MissMoss{
                 iterator &operator--(int);
                 iterator operator+(int);
                 iterator operator-(int);
-                int &operator*();
+                byte &operator*();
             };
             bytes::iterator begin();
             bytes::iterator end();
