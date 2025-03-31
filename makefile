@@ -1,19 +1,16 @@
 modules = 
 tests = 
 
+LibName = MossLib
+
+ValidateDirs = ["./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests" ]
+
 # Reminder to self on how to make it use libs in custom directory
 # g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
 
 .PHONY: BuildLibDir
 ValidateDirStruct:
-	if [ ! -d "./build" ]; then \
-		mkdir ./build; \
-	fi; \
-	for dir in lib objects tests; do \
-		if [ ! -d "./build/$$dir" ]; then \
-			mkdir ./build/$$dir; \
-		fi; \
-	done;
+	mkdir -p ${ValidateDirs}
 
 .PHONY: BuildObjects
 BuildObjects: ValidateDirStruct
