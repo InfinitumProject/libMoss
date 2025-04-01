@@ -3,7 +3,7 @@ tests =
 
 LibName = MossLib
 
-ValidateDirs = ["./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests" ]
+ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests"
 
 # Reminder to self on how to make it use libs in custom directory
 # g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
