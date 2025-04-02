@@ -1,5 +1,5 @@
-modules = 
-tests = 
+modules = DataHandler
+tests = BiMap
 
 LibName = MossLib
 
@@ -10,24 +10,38 @@ ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLi
 
 .PHONY: BuildLibDir
 ValidateDirStruct:
-	mkdir -p ${ValidateDirs}
+	@mkdir -p ${ValidateDirs}
+	@echo "Project directories validated"
 
 .PHONY: BuildObjects
 BuildObjects: ValidateDirStruct
-	for current_module in ${modules}; do \
-		g++ -c -fPIC ./src/MossLib/$$current_module.cpp -o ./build/objects/$$current_module.o; \
+	@for current_module in ${modules}; do \
+		g++ -c -fPIC ./src/$$current_module.cpp -o ./build/objects/$$current_module.o; \
 	done
+	@echo "Objects built"
 
 .PHONY: BuildLib
 BuildLib: BuildObjects ValidateDirStruct
-	g++ -shared -o ./build/lib/libMoss.so ./build/objects/*.o
+	@g++ -shared -o ./build/lib/libMoss.so ./build/objects/*.o
+	@echo "Library '${LibName}' compiled"
 
 .PHONY: BuildTests
 
 BuildTests: BuildLib ValidateDirStruct
-	for current_module in ${tests}; do \
+	@for current_module in ${tests}; do \
 		if [ ! -d "./build/tests/$$current_module" ]; then \
 			mkdir ./build/tests/$$current_module; \
 		fi; \
 		g++ ./tests/$$current_module/test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
 	done
+	@echo "Tests built"
+
+.PHONY: RunTests
+RunTests: BuildTests
+	@for test in ${tests}; do \
+		./build/tests/$$test/Test; \
+		if [ $$? -ne 0 ]; then \
+			echo "A tested module '$$test' failed!!"; \
+		fi; \
+	done;
+	@echo "All tests have been run"
