@@ -1,5 +1,5 @@
 modules = DataHandler
-tests = BiMap
+tests = bimap
 
 LibName = MossLib
 
