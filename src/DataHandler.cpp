@@ -55,6 +55,7 @@ namespace Moss {
             for (std::pair<T1,T2> pair : _app) {
                 this->data.push_back(pair);
             }
+            return *this;
         }
         
         template <typename T1, typename T2>
@@ -64,7 +65,7 @@ namespace Moss {
 
         template <typename T1, typename T2>
         typename bimap<T1,T2>::iterator bimap<T1,T2>::end(){
-            return bimap::iterator(this,this->data.size()-1);
+            return bimap::iterator(this,this->data.size());
         }
 
         template <typename T1, typename T2>

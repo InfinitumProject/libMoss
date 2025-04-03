@@ -5,7 +5,7 @@ LibName = MossLib
 
 ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests"
 
-CompilerArgs = -fconcepts
+CompilerArgs = -std=c++20
 # Reminder to self on how to make it use libs in custom directory
 # g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
 

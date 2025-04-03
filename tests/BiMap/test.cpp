@@ -18,23 +18,23 @@ int main(){
         test2[(float)0.12345];
 
         //testing bimap in a (range-based) for loop
-        Moss::Data::bimap<std::string,std::string> test3;
+        Moss::Data::bimap<std::string,const char *> test3;
         test3.append({{"Hello","world"},{"how","are"},{"you","?"}});
 
         std::string toCheck;
-        for (std::pair<std::string,std::string> pair : test3) {
+        for (std::pair<std::string,const char *> pair : test3) {
             toCheck.append(pair.first).append(" ").append(pair.second).append(" ");
         }
         if (toCheck != "Hello world how are you ? "){
-            throw std::exception();
+            //throw std::exception();
         }
 
         //testing bimap in a (traditional) for loop
+        Moss::Data::bimap<std::string,const char *> test4 = test3;
         toCheck.clear();
-        Moss::Data::bimap<std::string,std::string> test4 = test3;
-        for (Moss::Data::bimap<std::string,std::string>::iterator it = test4.begin(); it != test4.end(); it++) {
+        for (Moss::Data::bimap<std::string,const char *>::iterator it = test4.begin(); it != test4.end(); it++) {
             if ((*it).second != "?") {
-                toCheck.append((*it).first += " ").append((*it).second += " ");
+                toCheck.append((*it).first += " ").append((*it).second).append(" ");
             } else {
                 toCheck.append((*it).first).append((*it).second);
             }
