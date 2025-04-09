@@ -1,5 +1,5 @@
-modules = DataHandler
-tests = bimap
+modules = DataHandler network
+tests = bimap TCP
 
 LibName = MossLib
 
