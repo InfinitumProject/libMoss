@@ -5,7 +5,7 @@ LibName = MossLib
 
 ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests"
 
-CompilerArgs = -std=c++20
+CompilerArgs = #-std=c++20
 # Reminder to self on how to make it use libs in custom directory
 # g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
 
@@ -33,7 +33,7 @@ BuildTests: BuildLib ValidateDirStruct
 		if [ ! -d "./build/tests/$$current_module" ]; then \
 			mkdir ./build/tests/$$current_module; \
 		fi; \
-		g++ ${CompilerArgs} ./tests/$$current_module/test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
+		g++ ${CompilerArgs} ./tests/$$current_module/test.cpp -Wl,-rpath,\$$ORIGIN/../../lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
 	done
 	@echo "Tests built"
 

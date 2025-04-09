@@ -23,7 +23,7 @@ namespace Moss {
         }
 
         template <typename T1, typename T2>
-        T1 &bimap<T1,T2>::operator[](T2 _seek) requires (!std::is_same_v<T1,T2>) {
+        T1 &bimap<T1,T2>::operator[](T2 _seek){
             for (int i = 0; i < this->data.size(); i++) {
                 if (this->data[i].second == _seek) {
                     return this->data[i].first;
@@ -34,7 +34,7 @@ namespace Moss {
         }
 
         template <typename T1, typename T2>
-        T2 &bimap<T1,T2>::operator[](T1 _seek) requires (!std::is_same_v<T1,T2>) {
+        T2 &bimap<T1,T2>::operator[](T1 _seek){
             for (int i = 0; i < this->data.size(); i++) {
                 if (this->data[i].first == _seek) {
                     return this->data[i].second;

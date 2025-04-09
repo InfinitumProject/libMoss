@@ -7,12 +7,9 @@ namespace Moss {
          * @tparam T1 The first type in the bimap.
          * @tparam T2 The second type in the bimap.
          */
-        template <typename T1, typename T2> requires (!std::is_same_v<T1,T2>)
-        /*using val_type = typename std::enable_if<
-                    !std::is_same<T1,T2>::value,
-                    T2
-                >::type;*/
+        template <typename T1, typename T2>
         class bimap {
+            static_assert(!std::is_same<T1,T2>::value,"A bimap is not allowed to be constructed with two of the same type! Try wrapping one of the instances of the class so they get recognized as different types.");
             /**
              * @brief An uninitialized dummy value to return when the operator[] method throws an
              * exception to silence compiler errors regarding return statements in all execution paths.
@@ -47,13 +44,13 @@ namespace Moss {
              * @param _seek The thing to look for.
              * @returns The value that is associated with the input value.
              */
-            T1 &operator[](T2) requires (!std::is_same_v<T1,T2>);
+            T1 &operator[](T2);
             /**
              * @brief A lookup operator.
              * @param _seek The thing to look for.
              * @returns The value that is associated with the input value.
              */
-            T2 &operator[](T1) requires (!std::is_same_v<T1,T2>);
+            T2 &operator[](T1);
             /**
              * @brief Appends a pair to the bimap.
              * @param _data The pair to append.
