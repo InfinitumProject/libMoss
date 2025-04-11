@@ -5,6 +5,8 @@ LibName = MossLib
 
 ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests"
 
+Debug = false
+
 CompilerArgs = #-std=c++20
 # Reminder to self on how to make it use libs in custom directory
 # g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
@@ -40,7 +42,7 @@ BuildTests: BuildLib ValidateDirStruct
 .PHONY: RunTests
 RunTests: BuildTests
 	@for test in ${tests}; do \
-		./build/tests/$$test/Test; \
+		DEBUG=${Debug} ./build/tests/$$test/Test; \
 		if [ $$? -ne 0 ]; then \
 			echo "A tested module '$$test' failed!!"; \
 		fi; \

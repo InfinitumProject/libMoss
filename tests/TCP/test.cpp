@@ -1,4 +1,5 @@
 #include "../../include/MossLib/network.hpp"
+#include "../../include/MossLib/debug.hpp"
 
 int server(int port) {
     int server_fd, new_socket;
@@ -42,13 +43,19 @@ int server(int port) {
     }
 
     // Read and send data
-    while (buffer != "exit"){
+    for (;;){
+        write(new_socket, "READY\e", strlen("READY\e"));
+        dprint("Server:\tSent ready signal!");
         memset(buffer,0,sizeof(buffer));
         buffer[0] = '\0';
         recv(new_socket, buffer, 65535, 0);
-        std::cout << "Received: " << buffer << std::endl;
+        std::cout << "Server:\tReceived: " << buffer << std::endl;
         send(new_socket, buffer, strlen(buffer), 0);
-        std::cout << "Message sent" << std::endl;
+        dprint("Server:\tMessage sent");
+        if ((strncmp(buffer, "EXIT",4)) == 0){
+            write(new_socket,"EXIT",5);
+            break;
+        }
     }
 
     // Close socket
@@ -60,21 +67,18 @@ int server(int port) {
 using namespace std::chrono_literals;
 
 int main(){
-    std::thread serverT(&server,12345);
-    Moss::Network::TCP test("127.0.0.1",12345);
-    std::string buff;
-    test << "eaea";
-    std::this_thread::sleep_for(0.2s);
-    test >> buff;
-    std::cout << buff << std::endl;
-    test << "wawawa";
-    std::this_thread::sleep_for(0.2s);
-    test >> buff;
-    std::cout << buff << std::endl;
-    test << "exit";
-    serverT.join();
-    //test << "exit";
-    //test << "exit";
-    test.closeConnection();
+    std::thread e(&server,1234);
+    std::this_thread::sleep_for(2s);
+
+    Moss::Network::TCP conn("127.0.0.1",1234);
+
+    std::string ret;
+
+    conn << "Test";
+    conn >> ret;
+    std::cout << ret << std::endl;
+    conn << "EXIT";
+
+    e.join();
     return 0;
 }
