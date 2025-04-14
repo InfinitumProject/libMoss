@@ -2,10 +2,13 @@
 #include "../../include/MossLib/debug.hpp"
 
 #include <chrono>
+#include <functional>
 
 int server(int port) {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(2.5s);
+    bool running = true;
+    std::vector<std::thread> threads;
     int server_fd, new_socket;
     struct sockaddr_in address;
     int opt = 1;
@@ -39,30 +42,44 @@ int server(int port) {
         return 1;
     }
 
-    // Accept connection
-    if ((new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) < 0) {
-        std::cout << "accept failed" << std::endl;
-        return 1;
-    }
-
-    // Read and send data
-    for (;;){
-        write(new_socket, "READY\e", strlen("READY\e"));
-        dprint("Server:\tSent ready signal!");
-        memset(buffer,0,sizeof(buffer));
-        buffer[0] = '\0';
-        recv(new_socket, buffer, 65535, 0);
-        std::cout << "Server:\tReceived: " << buffer << std::endl;
-        send(new_socket, buffer, strlen(buffer), 0);
-        dprint("Server:\tMessage sent");
-        if ((strncmp(buffer, "EXIT",4)) == 0){
-            write(new_socket,"EXIT",5);
-            break;
+    
+    std::function<void(int)> handler = [&running](int new_socket){
+        char buffer[65535];
+        for (;;){
+            write(new_socket, "READY\e", strlen("READY\e"));
+            dprint("Server:\tSent ready signal!");
+            memset(buffer,0,sizeof(buffer));
+            buffer[0] = '\0';
+            recv(new_socket, buffer, 65535, 0);
+            std::cout << "Server:\tReceived: " << buffer << std::endl;
+            send(new_socket, buffer, strlen(buffer), 0);
+            dprint("Server:\tMessage sent");
+            if ((strncmp(buffer, "EXIT",4)) == 0){
+                write(new_socket,"EXIT",5);
+                break;
+            }
+            if ((strncmp(buffer, "STOP\e",4)) == 0){
+                write(new_socket,"STOP\e",6);
+                exit(0);
+                break;
+            }
+        }
+        close(new_socket);
+    };
+    
+    // Accept connections
+    while (running){
+        if ((new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) >= 0) {
+            threads.push_back(std::thread(handler, new_socket));
         }
     }
-
+    
+    for (auto &th : threads){
+        if (th.joinable()){
+            th.join();
+        }
+    }
     // Close socket
-    close(new_socket);
     close(server_fd);
     return 0;
 }
@@ -72,20 +89,21 @@ using namespace std::chrono_literals;
 int main(){
     std::thread e(&server,1234);
 
-    Moss::Network::TCP conn("127.0.0.1",1234);
+    Moss::Network::TCP conn1("127.0.0.1",1234);
+    Moss::Network::TCP conn2("127.0.0.1",1234);
 
-    std::string ret;
+    conn1 << "This is a test from C1.";
+    conn1 << "EWAEWEADAS";
+    conn1 << "EXIT";
+    //Only put a pause because it's illegible in terminal when they talk at once.
+    std::this_thread::sleep_for(2.5s);
+    conn2 << "This is a test from C2.";
+    conn2 << "Ooooh.. keysmash... ABGAJSBGJBAG!!!!";
+    conn2 << "EXIT";
 
-    conn << "Test";
-    conn >> ret;
-    std::cout << "Client:\tRecieved: " << ret << std::endl;
-    conn << "EWAEWEADASKGN";
-    conn >> ret;
-    std::cout << "Client:\tRecieved: " << ret << std::endl;
-    conn << "EXIT";
-    conn >> ret;
-    std::cout << "Client:\tRecieved: " << ret << std::endl;
-
+    std::this_thread::sleep_for(5s);
+    Moss::Network::TCP closer("127.0.0.1",1234);
+    closer << "STOP\e";
     e.join();
     return 0;
 }

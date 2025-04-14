@@ -57,7 +57,7 @@ namespace Moss::Network {
                         dprint("Client:\tServer is ready!");
                         this->is_server_ready = true;
                     } else {
-                        dprint("Client:\tRecieved readable data: ", "DEBUG", false);
+                        dprint("Client:\tRecieved readable data: ", false);
                         dprint(buff);
                         this->_read_buffer = buff;
                     }
@@ -65,7 +65,9 @@ namespace Moss::Network {
                 if (this->_write_buffer.size()) {
                     if (this->_write_buffer[0].size() && this->is_server_ready){
                         dprint("Client:\tServer is ready and we have data to send!");
-                        write(this->_connection_fd,this->_write_buffer[0].c_str(),sizeof(this->_write_buffer[0].c_str()));
+                        dprint("Client:\tsizeof(Data): ", false);
+                        dprint(std::to_string(this->_write_buffer[0].size()).c_str());
+                        write(this->_connection_fd,this->_write_buffer[0].c_str(),this->_write_buffer[0].size()+1);
                         this->_write_buffer.erase(this->_write_buffer.begin());
                         this->is_server_ready = false;
                     }
