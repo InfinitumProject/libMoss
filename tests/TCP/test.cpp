@@ -87,23 +87,27 @@ int server(int port) {
 using namespace std::chrono_literals;
 
 int main(){
-    std::thread e(&server,1234);
-
-    Moss::Network::TCP conn1("127.0.0.1",1234);
-    Moss::Network::TCP conn2("127.0.0.1",1234);
-
-    conn1 << "This is a test from C1.";
-    conn1 << "EWAEWEADAS";
-    conn1 << "EXIT";
-    //Only put a pause because it's illegible in terminal when they talk at once.
-    std::this_thread::sleep_for(2.5s);
-    conn2 << "This is a test from C2.";
-    conn2 << "Ooooh.. keysmash... ABGAJSBGJBAG!!!!";
-    conn2 << "EXIT";
-
-    std::this_thread::sleep_for(5s);
-    Moss::Network::TCP closer("127.0.0.1",1234);
-    closer << "STOP\e";
-    e.join();
-    return 0;
+    try {
+        std::thread e(&server,1234);
+    
+        Moss::Network::TCP conn1("127.0.0.1",1234);
+        Moss::Network::TCP conn2("127.0.0.1",1234);
+    
+        conn1 << "This is a test from C1.";
+        conn1 << "EWAEWEADAS";
+        conn1 << "EXIT";
+        //Only put a pause because it's illegible in terminal when they talk at once.
+        std::this_thread::sleep_for(2.5s);
+        conn2 << "This is a test from C2.";
+        conn2 << "Ooooh.. keysmash... ABGAJSBGJBAG!!!!";
+        conn2 << "EXIT";
+    
+        std::this_thread::sleep_for(5s);
+        Moss::Network::TCP closer("127.0.0.1",1234);
+        closer << "STOP\e";
+        e.join();
+        return 0;
+    } catch (...) {
+        return -1;
+    }
 }
