@@ -1,13 +1,16 @@
 #pragma once
 #include <iostream>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
 #include <vector>
 #include <string> 
-#include <thread>
 #include <chrono>
+#include <thread>
+#ifdef __linux
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#elif _WIN32
+#endif
 
 namespace Moss::Network {
 

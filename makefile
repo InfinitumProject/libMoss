@@ -5,11 +5,15 @@ LibName = MossLib
 
 ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests"
 
+compiler?=g++
+# 
+# x86_64-w64-mingw32-g++-posix
+
 Debug = false
 
-CompilerArgs = #-std=c++20
+CompilerArgs = -std=c++17
 # Reminder to self on how to make it use libs in custom directory
-# g++ ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
+# ${compiler} ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
 
 .PHONY: BuildLibDir
 ValidateDirStruct:
@@ -19,13 +23,13 @@ ValidateDirStruct:
 .PHONY: BuildObjects
 BuildObjects: ValidateDirStruct
 	@for current_module in ${modules}; do \
-		g++ ${CompilerArgs} -c -fPIC ./src/$$current_module.cpp -o ./build/objects/$$current_module.o; \
+		${compiler} ${CompilerArgs} -c -fPIC ./src/$$current_module.cpp -o ./build/objects/$$current_module.o; \
 	done
 	@echo "Objects built"
 
 .PHONY: BuildLib
 BuildLib: BuildObjects ValidateDirStruct
-	@g++ ${CompilerArgs} -shared -o ./build/lib/libMoss.so ./build/objects/*.o
+	@${compiler} ${CompilerArgs} -shared -o ./build/lib/libMoss.so ./build/objects/*.o
 	@echo "Library '${LibName}' compiled"
 
 .PHONY: BuildTests
@@ -35,7 +39,7 @@ BuildTests: BuildLib ValidateDirStruct
 		if [ ! -d "./build/tests/$$current_module" ]; then \
 			mkdir ./build/tests/$$current_module; \
 		fi; \
-		g++ ${CompilerArgs} ./tests/$$current_module/test.cpp -Wl,-rpath,\$$ORIGIN/../../lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
+		${compiler} ${CompilerArgs} ./tests/$$current_module/test.cpp -Wl,-rpath,\$$ORIGIN/../../lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
 	done
 	@echo "Tests built"
 

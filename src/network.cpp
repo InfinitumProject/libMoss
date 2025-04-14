@@ -1,6 +1,9 @@
-#include <sys/ioctl.h>
 #include "../include/MossLib/network.hpp"
 #include "../include/MossLib/debug.hpp"
+
+#ifdef __linux
+
+#include <sys/ioctl.h>
 
 namespace Moss::Network {
 
@@ -120,3 +123,6 @@ namespace Moss::Network {
         return *this;
     }
 }
+
+#elif _WIN32
+#endif
