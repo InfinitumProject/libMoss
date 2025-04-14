@@ -5,16 +5,13 @@
 #include <vector>
 #include <string> 
 #include <chrono>
-<<<<<<< HEAD
 #include <thread>
 #ifdef __linux
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #elif _WIN32
 #endif
-=======
 #define READY_PACKET "READY\e"
->>>>>>> df50a4880ce615d489d037afdacb044b0937a2af
 
 namespace Moss::Network {
 
