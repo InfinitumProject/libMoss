@@ -5,12 +5,16 @@
 #include <vector>
 #include <string> 
 #include <chrono>
+<<<<<<< HEAD
 #include <thread>
 #ifdef __linux
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #elif _WIN32
 #endif
+=======
+#define READY_PACKET "READY\e"
+>>>>>>> df50a4880ce615d489d037afdacb044b0937a2af
 
 namespace Moss::Network {
 
@@ -22,16 +26,57 @@ namespace Moss::Network {
         std::string _read_buffer = "";
         std::vector<std::thread> _threads;
         void startBufferListener();
+        
         public:
-        static int constructConnection(std::string,int);
+        /**
+         * @brief Constructs a new socket connection.
+         * @param _address A string that contains an address, either an IP or hostname.
+         * @param _port The port to connect on.
+         * 
+         * @return a socket connection fd.
+         */
+        static int constructConnection(std::string,int,int);
+        
+        /**
+         * @brief Constructs a new socket connection and stores it in the class.
+         * @param _address A string that contains an address, either an IP or hostname.
+         * @param _port The port to connect on.
+         * 
+         * @return a socket connection fd.
+         */
         TCP(std::string, int);
+
+        /**
+         * @brief Safely destroy a TCP object, handling all threads inside of it.
+         */
         ~TCP();
 
+        /**
+         * @brief Gets how many bytes are avaliable to read from the socket.
+         * 
+         * @return The number of bytes.
+         */
         int hasReadableData();
 
+        /**
+         * @brief Writes a string containing data to the socket safely (waits for the server to declare it is ready to recieve data).
+         * 
+         * @return A reference to itself so they can be chained together.
+         */
         TCP &operator<<(std::string);
+
+        /**
+         * @brief Reads data from what the server has sent and writes it to the given string variable.
+         * 
+         * @return A reference to itself so they can be chained.
+         */
         TCP &operator>>(std::string&);
 
+        /**
+         * @brief Just a universal error used to diagnose issues, will probably expand it into a struct
+         * @brief with more descript errors in the future. (1 = Socket creation failure, 2 = Unsupported or invalid address, 3 = Failure to connect.)
+         * @brief 
+         */
         class socketError : public std::exception {
             public:
             int _error;

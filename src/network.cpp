@@ -1,5 +1,6 @@
 #include "../include/MossLib/network.hpp"
 #include "../include/MossLib/debug.hpp"
+#define WAIT_SECS 2.5
 
 #ifdef __linux
 
@@ -7,64 +8,57 @@
 
 namespace Moss::Network {
 
-    int TCP::constructConnection(std::string _address, int _port){
-        int sockfd, connfd;
-        struct sockaddr_in servaddr, cli;
+    int TCP::constructConnection(std::string _address, int _port, int _connection_retries){
+        int sockfd;
+        struct sockaddr_in servaddr;
 
-        // socket create and verification
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd == -1) {
-            dprint("Client:\tsocket creation failed...");
+            throw socketError(1);
             exit(0);
         }
         else
             dprint("Client:\tSocket successfully created..");
         bzero(&servaddr, sizeof(servaddr));
 
-        // assign IP, PORT
         servaddr.sin_family = AF_INET;
-        servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+        servaddr.sin_addr.s_addr = inet_addr(_address.c_str());
         servaddr.sin_port = htons(_port);
 
-        // connect the client socket to server socket
-        if (connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) != 0) {
-            dprint("Client:\tConnection with the server failed...");
-            exit(0);
+        for (int n = 0; n < _connection_retries; n++){
+            try {
+                if (connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) != 0) {
+                    throw socketError(3);
+                    exit(0);
+                }
+                else {
+                    dprint("Client:\tConnected to the server...");
+                    return sockfd;
+                }
+            } catch (socketError &e) {
+                if (e._error == 3){
+                    std::cout << "Failed to connect to server, retrying in " << WAIT_SECS << " seconds... (up to " << _connection_retries << " times)" << std::endl;
+                    std::this_thread::sleep_for(2.5s);
+                }
+            }
         }
-        else {
-            dprint("Client:\tConnected to the server...");
-            return sockfd;
-        }
+        throw socketError(3);
     }
 
     void TCP::startBufferListener(){
         auto listener = [&](){
             char buff[65535];
-            /*for (int n = 0;;) {
-                bzero(buff, sizeof(buff));
-                printf("Enter the string : ");
-                n = 0;
-                while ((buff[n++] = getchar()) != '\n');
-                write(this->_connection_fd, buff, sizeof(buff));
-                bzero(buff, sizeof(buff));
-                read(this->_connection_fd, buff, sizeof(buff));
-                printf("From Server : %s", buff);
-                if ((strncmp(buff, "EXIT", 4)) == 0) {
-                    printf("Client Exit...\n");
-                    break;
-                }
-            }*/
 
             while (this->is_running) {
-                //dprint("tick in buffer listener loop...");
                 bzero(buff,sizeof(buff));
                 if (this->hasReadableData()) {
                     read(this->_connection_fd,buff,this->hasReadableData());
-                    if (strcmp(buff,"READY\e") == 0){
+                    if (strcmp(buff,READY_PACKET) == 0){
                         dprint("Client:\tServer is ready!");
                         this->is_server_ready = true;
                     } else {
-                        dprint("Client:\tRecieved readable data!");
+                        dprint("Client:\tRecieved readable data: ", "DEBUG", false);
+                        dprint(buff);
                         this->_read_buffer = buff;
                     }
                 }
@@ -82,9 +76,9 @@ namespace Moss::Network {
         this->_threads.insert(this->_threads.begin(),std::thread(listener));
     }
     
-    TCP::TCP(std::string,int){
+    TCP::TCP(std::string _address, int _port){
         dprint("Constructing TCP client...");
-        this->_connection_fd = this->constructConnection("127.0.0.1",1234);
+        this->_connection_fd = this->constructConnection(_address.c_str(), _port, 5);
         dprint("Client:\tStarting listener...");
         this->startBufferListener();
     }
@@ -117,6 +111,8 @@ namespace Moss::Network {
     }
 
     TCP &TCP::operator>>(std::string& _output){
+        dprint("Client:\tAwaiting buffer to fill for a read");
+        while (!this->_read_buffer.size());
         dprint("Client:\tAttempting a read of buffer data");
         _output = this->_read_buffer;
         this->_read_buffer.clear();

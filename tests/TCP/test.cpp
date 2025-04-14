@@ -1,13 +1,16 @@
 #include "../../include/MossLib/network.hpp"
 #include "../../include/MossLib/debug.hpp"
 
+#include <chrono>
+
 int server(int port) {
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(2.5s);
     int server_fd, new_socket;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[65535] = {0};
-    const char* message = "Hello from server";
 
     // Create socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -68,7 +71,6 @@ using namespace std::chrono_literals;
 
 int main(){
     std::thread e(&server,1234);
-    std::this_thread::sleep_for(2s);
 
     Moss::Network::TCP conn("127.0.0.1",1234);
 
@@ -76,8 +78,13 @@ int main(){
 
     conn << "Test";
     conn >> ret;
-    std::cout << ret << std::endl;
+    std::cout << "Client:\tRecieved: " << ret << std::endl;
+    conn << "EWAEWEADASKGN";
+    conn >> ret;
+    std::cout << "Client:\tRecieved: " << ret << std::endl;
     conn << "EXIT";
+    conn >> ret;
+    std::cout << "Client:\tRecieved: " << ret << std::endl;
 
     e.join();
     return 0;
