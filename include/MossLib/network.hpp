@@ -99,4 +99,7 @@ namespace Moss::Network {
             }
         };
     };
+
+    //To do next: Implement TCP Server class with a virtual handler function to handle connections for multithreading capability.
+    //Also: start with a single threaded server, and then expand to multithread. Build a good foundation, stop jumping in!!!
 }
