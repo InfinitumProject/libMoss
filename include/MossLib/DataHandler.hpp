@@ -169,16 +169,5 @@ namespace Moss {
                 }
             };
         };
-
-        /*class DataManager {
-            private:
-            nlohmann::json data;
-            std::map<std::string,char> dataMappings;
-            public:
-            DataManager(){};
-            std::string encode(std::string);
-            void load(std::string);
-            void save(std::string);
-        };*/
     }
 }

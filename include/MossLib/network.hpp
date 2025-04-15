@@ -72,7 +72,6 @@ namespace Moss::Network {
         /**
          * @brief Just a universal error used to diagnose issues, will probably expand it into a struct
          * @brief with more descript errors in the future. (1 = Socket creation failure, 2 = Unsupported or invalid address, 3 = Failure to connect.)
-         * @brief 
          */
         class socketError : public std::exception {
             public:
