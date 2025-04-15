@@ -76,6 +76,8 @@ namespace Moss::Network {
          * @brief with more descript errors in the future. (1 = Socket creation failure, 2 = Unsupported or invalid address, 3 = Failure to connect.)
          */
         class socketError : public std::exception {
+            //REFORMAT THIS
+            //Reformat this into a namespace that has multiple exceptions in it so they can be easier differentiated.
             public:
             int _error;
             socketError(int errorCode = 0) : _error(errorCode) {}
