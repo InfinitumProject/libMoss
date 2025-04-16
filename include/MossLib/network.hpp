@@ -11,7 +11,9 @@
 #include <sys/socket.h>
 #elif _WIN32
 #endif
-#define READY_PACKET "READY\e"
+#define READY_PACKET "CMD_^[READY]"
+#define EXIT_PACKET "CMD_^[EXIT]"
+#define STOP_PACKET "CMD_^[STOP]"
 
 namespace Moss::Network {
 

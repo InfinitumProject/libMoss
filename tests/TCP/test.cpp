@@ -46,7 +46,7 @@ int server(int port) {
     std::function<void(int)> handler = [](int new_socket){
         char buffer[65535];
         for (;;){
-            write(new_socket, "READY\e", strlen("READY\e"));
+            write(new_socket, READY_PACKET, strlen(READY_PACKET));
             dprint("Server:\tSent ready signal!");
             memset(buffer,0,sizeof(buffer));
             buffer[0] = '\0';
@@ -54,12 +54,12 @@ int server(int port) {
             std::cout << "Server:\tReceived: " << buffer << std::endl;
             send(new_socket, buffer, strlen(buffer), 0);
             dprint("Server:\tMessage sent");
-            if ((strncmp(buffer, "EXIT",4)) == 0){
-                write(new_socket,"EXIT",5);
+            if ((strncmp(buffer, EXIT_PACKET, strlen(EXIT_PACKET))) == 0){
+                write(new_socket, EXIT_PACKET, strlen(EXIT_PACKET));
                 break;
             }
-            if ((strncmp(buffer, "STOP\e",4)) == 0){
-                write(new_socket,"EXIT",5);
+            if ((strncmp(buffer, STOP_PACKET, strlen(STOP_PACKET))) == 0){
+                write(new_socket, EXIT_PACKET, strlen(EXIT_PACKET));
                 exit(0);
                 break;
             }
@@ -95,16 +95,14 @@ int main(){
     
         conn1 << "This is a test from C1.";
         conn1 << "EWAEWEADAS";
-        conn1 << "EXIT";
-        //Only put a pause because it's illegible in terminal when they talk at once.
-        std::this_thread::sleep_for(2.5s);
+        conn1 << EXIT_PACKET;
         conn2 << "This is a test from C2.";
         conn2 << "Ooooh.. keysmash... ABGAJSBGJBAG!!!!";
-        conn2 << "EXIT";
+        conn2 << EXIT_PACKET;
     
-        std::this_thread::sleep_for(5s);
+        std::this_thread::sleep_for(1s);
         Moss::Network::TCP closer("127.0.0.1",1234);
-        closer << "STOP\e";
+        closer << STOP_PACKET;
         e.join();
         return 0;
     } catch (...) {

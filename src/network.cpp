@@ -15,7 +15,6 @@ namespace Moss::Network {
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd == -1) {
             throw socketError(1);
-            exit(0);
         }
         else
             dprint("Client:\tSocket successfully created..");
@@ -29,7 +28,6 @@ namespace Moss::Network {
             try {
                 if (connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) != 0) {
                     throw socketError(3);
-                    exit(0);
                 }
                 else {
                     dprint("Client:\tConnected to the server...");
