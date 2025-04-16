@@ -1,9 +1,4 @@
 #include "../../include/MossLib/network.hpp"
-#include "../../include/MossLib/debug.hpp"
-
-#include <chrono>
-#include <functional>
-
 int server(int port) {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(2.5s);
@@ -13,7 +8,7 @@ int server(int port) {
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[65535] = {0};
+    //char buffer[65535] = {0};
 
     // Create socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -43,7 +38,7 @@ int server(int port) {
     }
 
     
-    std::function<void(int)> handler = [&running](int new_socket){
+    std::function<void(int)> handler = [](int new_socket){
         char buffer[65535];
         for (;;){
             write(new_socket, READY_PACKET, strlen(READY_PACKET));
@@ -82,30 +77,4 @@ int server(int port) {
     // Close socket
     close(server_fd);
     return 0;
-}
-
-using namespace std::chrono_literals;
-
-int main(){
-    try {
-        std::thread e(&server,1234);
-    
-        Moss::Network::TCP conn1("127.0.0.1",1234);
-        Moss::Network::TCP conn2("127.0.0.1",1234);
-    
-        conn1 << "This is a test from C1.";
-        conn1 << "EWAEWEADAS";
-        conn1 << EXIT_PACKET;
-        conn2 << "This is a test from C2.";
-        conn2 << "Ooooh.. keysmash... ABGAJSBGJBAG!!!!";
-        conn2 << EXIT_PACKET;
-    
-        std::this_thread::sleep_for(1s);
-        Moss::Network::TCP closer("127.0.0.1",1234);
-        closer << STOP_PACKET;
-        e.join();
-        return 0;
-    } catch (...) {
-        return -1;
-    }
 }

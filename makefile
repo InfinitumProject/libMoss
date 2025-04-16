@@ -1,5 +1,5 @@
 modules = DataHandler network
-tests = bimap TCP
+tests = bimap TCP/Streamlike
 
 LibName = MossLib
 
@@ -43,6 +43,7 @@ BuildTests: BuildLib ValidateDirStruct
 	done
 	@echo "Tests built"
 
+# Fix rpath issues
 .PHONY: RunTests
 RunTests: BuildTests
 	@for test in ${tests}; do \
