@@ -13,7 +13,7 @@ int server(int port) {
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[65535] = {0};
+    //char buffer[65535] = {0};
 
     // Create socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -43,7 +43,7 @@ int server(int port) {
     }
 
     
-    std::function<void(int)> handler = [&running](int new_socket){
+    std::function<void(int)> handler = [](int new_socket){
         char buffer[65535];
         for (;;){
             write(new_socket, "READY\e", strlen("READY\e"));
@@ -59,7 +59,7 @@ int server(int port) {
                 break;
             }
             if ((strncmp(buffer, "STOP\e",4)) == 0){
-                write(new_socket,"STOP\e",6);
+                write(new_socket,"EXIT",5);
                 exit(0);
                 break;
             }
