@@ -6,6 +6,7 @@
 #include <string> 
 #include <chrono>
 #include <thread>
+#include <functional>
 #ifdef __linux
 #include <arpa/inet.h>
 #include <sys/socket.h>
