@@ -1,0 +1,8 @@
+Schema syncing:
+
+Server: Generate a schema automagically based on packets' most used pieces of data
+Server: Send packet schema to clients
+Server: Cache current packet schema hash
+Client: Upon recieving packet schema cache it and hash it, then cache the hash as well
+Client: In future connections, send schema hash with connection information, if nothing
+        has changed the hash will be the same and the schema will not need to be synced again
