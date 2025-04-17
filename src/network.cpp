@@ -14,7 +14,7 @@ namespace Moss::Network {
 
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd == -1) {
-            throw socketError(1);
+            throw new socketError::socketCreationError;
         }
         else
             dprint("Client:\tSocket successfully created..");
@@ -27,20 +27,17 @@ namespace Moss::Network {
         for (int n = 0; n < _connection_retries; n++){
             try {
                 if (connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) != 0) {
-                    throw socketError(3);
+                    throw new socketError::socketConnectionError;
                 }
                 else {
                     dprint("Client:\tConnected to the server...");
                     return sockfd;
                 }
-            } catch (socketError &e) {
-                if (e._error == 3){
-                    std::cout << "Failed to connect to server, retrying in " << WAIT_SECS << " seconds... (up to " << _connection_retries << " times)" << std::endl;
-                    std::this_thread::sleep_for(2.5s);
-                }
+            } catch (socketError::socketConnectionError &e){
+
             }
         }
-        throw socketError(3);
+        throw new socketError::socketConnectionError;
     }
 
     void TCP::startBufferListener(){

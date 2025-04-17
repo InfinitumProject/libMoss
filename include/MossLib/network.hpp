@@ -18,7 +18,6 @@
 
 namespace Moss::Network {
 
-    using namespace std::chrono_literals;
     class TCP {
         bool is_running = true, is_server_ready = false;
         int _connection_fd;
@@ -72,36 +71,38 @@ namespace Moss::Network {
          */
         TCP &operator>>(std::string&);
 
-        /**
-         * @brief Just a universal error used to diagnose issues, will probably expand it into a struct
-         * @brief with more descript errors in the future. (1 = Socket creation failure, 2 = Unsupported or invalid address, 3 = Failure to connect.)
-         */
-        class socketError : public std::exception {
-            //REFORMAT THIS
-            //Reformat this into a namespace that has multiple exceptions in it so they can be easier differentiated.
+    };
+    
+    /**
+     * @brief A namespace containing all of the errors relating to sockets and TCP connections.
+     */
+    namespace socketError{
+        class socketCreationError : public std::exception {
             public:
-            int _error;
-            socketError(int errorCode = 0) : _error(errorCode) {}
             const char *what() const noexcept override {
-                switch (this->_error) {                
-                case 1:
-                    return "Error: Could not create socket!";
-                    break;
-
-                case 2:
-                    return "Error: Unsupported or invalid address!";
-                    break;
-
-                case 3:
-                    return "Error: Could not connect!";
-                    break;
-                default:
-                    return "Error: Unspecified error!";
-                    break;
-                }
+                return "Error: Could not create socket!";
             }
         };
-    };
+        class socketAddressError : public std::exception {
+            public:
+            const char *what() const noexcept override {
+                return "Error: Unsupported or invalid address!";
+            }
+        };
+        class socketConnectionError : public std::exception {
+            public:
+            const char *what() const noexcept override {
+                return "Error: Could not connect!";
+            }
+        };
+        class socketOtherError : public std::exception {
+            public:
+            const char *what() const noexcept override {
+                return "Error: Unspecified error!";
+            }
+        };
+    }
+
 
     //To do next: Implement TCP Server class with a virtual handler function to handle connections for multithreading capability.
     //Also: start with a single threaded server, and then expand to multithread. Build a good foundation, stop jumping in!!!
