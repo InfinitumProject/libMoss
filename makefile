@@ -37,13 +37,12 @@ BuildLib: BuildObjects ValidateDirStruct
 BuildTests: BuildLib ValidateDirStruct
 	@for current_module in ${tests}; do \
 		if [ ! -d "./build/tests/$$current_module" ]; then \
-			mkdir ./build/tests/$$current_module; \
+			mkdir -p ./build/tests/$$current_module; \
 		fi; \
 		${compiler} ${CompilerArgs} ./tests/$$current_module/test.cpp -Wl,-rpath,\$$ORIGIN/../../lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
 	done
 	@echo "Tests built"
 
-# Fix rpath issues
 .PHONY: RunTests
 RunTests: BuildTests
 	@for test in ${tests}; do \
