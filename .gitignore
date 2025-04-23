@@ -1,0 +1,5 @@
+build/lib/*
+build/objects/*
+build/tests/*
+.vscode
+*.deb
