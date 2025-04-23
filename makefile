@@ -1,4 +1,4 @@
-modules = DataHandler network
+modules ?= network
 tests = bimap TCP/Streamlike
 
 LibName = MossLib
