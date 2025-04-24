@@ -1,0 +1,23 @@
+# Maintainer: Your Name <your.email@example.com>
+pkgname=libMoss
+pkgver=1.0
+pkgrel=2
+pkgdesc="Currently a library that I hope to expand into something greater."
+arch=('any')
+url="https://example.com/hello"
+license=('None')
+depends=()
+source=("git+https://github.com/InfinitumProject/libMoss.git")
+sha256sums=('SKIP')  # Replace with actual checksum in real PKGBUILDs
+
+build() {
+  cd $srcdir/$pkgname
+  make BuildLib modules=network
+}
+
+package() {
+  install -Dm755 $srcdir/$pkgname/build/lib/$pkgname.so "$pkgdir/usr/lib/$pkgname.so"
+  for f in $srcdir/$pkgname/include/$pkgname/*.hpp; do
+    install -Dm644 "$f" "$pkgdir/usr/include/$pkgname/$(basename "$f")"
+  done
+}
