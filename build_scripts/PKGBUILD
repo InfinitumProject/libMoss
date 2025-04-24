@@ -21,3 +21,6 @@ package() {
     install -Dm644 "$f" "$pkgdir/usr/include/$pkgname/$(basename "$f")"
   done
 }
+rm -rf ./$pkgname 
+rm -rf ./pkg
+rm -rf ./src
