@@ -1,14 +1,16 @@
 #!/bin/bash
 
+exec > /dev/null
+
 modules="network"
 
 packageName="libMoss"; packageMajor="1"; packageMinor="0"; packageRevision="2"
 
 packageFull="${packageName}_${packageMajor}.${packageMinor}-${packageRevision}"
 
-echo $packageFull
+# echo $packageFull
 
-rm -rf build
+rm -rf build/lib build/objects build/tests
 
 make BuildLib modules=$modules
 
@@ -40,4 +42,4 @@ Description: Miss-Moss Library
 
 dpkg-deb --build --root-owner-group $packageFull
 
-rm -rf build $packageFull
+rm -rf $packageFull

@@ -1,5 +1,2 @@
-build/lib/*
-build/objects/*
-build/tests/*
+build
 .vscode
-*.deb

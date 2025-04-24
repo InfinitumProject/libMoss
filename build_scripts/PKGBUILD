@@ -1,4 +1,5 @@
 # Maintainer: Your Name <your.email@example.com>
+# !!!RUN FROM MAKEFILE!!!: make PackageArch
 pkgname=libMoss
 pkgver=1.0
 pkgrel=2
@@ -21,6 +22,3 @@ package() {
     install -Dm644 "$f" "$pkgdir/usr/include/$pkgname/$(basename "$f")"
   done
 }
-rm -rf ./$pkgname 
-rm -rf ./pkg
-rm -rf ./src
