@@ -1,7 +1,7 @@
 modules ?= network
 tests = bimap TCP/Streamlike
 
-LibName = MossLib
+LibName = libMoss
 
 ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests"
 
@@ -29,7 +29,7 @@ BuildObjects: ValidateDirStruct
 
 .PHONY: BuildLib
 BuildLib: BuildObjects ValidateDirStruct
-	@${compiler} ${CompilerArgs} -shared -o ./build/lib/libMoss.so ./build/objects/*.o
+	@${compiler} ${CompilerArgs} -shared -o ./build/lib/${LibName}.so ./build/objects/*.o
 	@echo "Library '${LibName}' compiled"
 
 .PHONY: BuildTests
