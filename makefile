@@ -71,3 +71,16 @@ PackageDeb: build_scripts/package_debian.sh ValidateDirStruct
 	@echo "Moving finished package to 'build/packages'"
 	@mv ./${LibName}*.deb ./build/packages
 
+.PHONY: Install
+Install:
+	@if [ "cat /etc/os-release | grep -i arch" ]; then \
+		echo "Appears to be Arch Linux; attempting to install with pacman"; \
+		make PackageArch; \
+		sudo pacman -U ./build/packages/${LibName}-*.pkg.tar.zst; \
+	elif [ "cat /etc/os-release | grep -i debian"]; then \
+		echo "Appears to be a Debian distro; attempting install with dpkg"; \
+		make PackageDeb; \
+		sudo dpkg -i ./build/packages/${LibName}*.deb; \
+	else \
+		echo "Distro not recognized! Cannot install automatically, you're on your own."; \
+	fi;
