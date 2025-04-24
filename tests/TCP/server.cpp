@@ -1,5 +1,5 @@
-#include "../../include/MossLib/network.hpp"
-#include "../../include/MossLib/debug.hpp"
+#include "../../include/libMoss/network.hpp"
+#include "../../include/libMoss/debug.hpp"
 int server(int port) {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(2.5s);

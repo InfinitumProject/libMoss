@@ -1,5 +1,5 @@
-#include "../../../include/MossLib/network.hpp"
-#include "../../../include/MossLib/debug.hpp"
+#include "../../../include/libMoss/network.hpp"
+#include "../../../include/libMoss/debug.hpp"
 #include "../server.cpp"
 
 #include <chrono>

@@ -1,5 +1,5 @@
-#include "../include/MossLib/network.hpp"
-#include "../include/MossLib/debug.hpp"
+#include "../include/libMoss/network.hpp"
+#include "../include/libMoss/debug.hpp"
 #define WAIT_SECS 2.5
 
 #ifdef __linux
