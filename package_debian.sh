@@ -1,6 +1,6 @@
 #!/bin/bash
 
-packageName="MossLib"; packageMajor="1"; packageMinor="0"; packageRevision="1"
+packageName="libMoss"; packageMajor="1"; packageMinor="0"; packageRevision="2"
 
 packageFull="${packageName}_${packageMajor}.${packageMinor}-${packageRevision}"
 
