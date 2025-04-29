@@ -85,20 +85,26 @@ int server(int port) {
 
 int main(){
     try {
+        dprint("Test:\tStarting server thread...");
         std::thread e(&server,1234);
         
+        dprint("Test:\tCreating conn1...");
         Moss::Network::TCP conn1("127.0.0.1",1234);
+        dprint("Test:\tCreating conn2...");
         Moss::Network::TCP conn2("127.0.0.1",1234);
         
+        dprint("Test:\tRunning interactions on conn1...");
         conn1 << "This is a test from C1.";
         conn1 << "EWAEWEADAS";
         conn1 << EXIT_PACKET;
+        dprint("Test:\tRunning interactions on conn2...");
         conn2 << "This is a test from C2.";
         conn2 << "Ooooh.. keysmash... ABGAJSBGJBAG!!!!";
         conn2 << EXIT_PACKET;
         
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1s);
+        dprint("Test:\tCreating server closer to send the termination signal...");
         Moss::Network::TCP closer("127.0.0.1",1234);
         closer << STOP_PACKET;
         e.join();

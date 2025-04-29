@@ -70,6 +70,10 @@ namespace Moss::Network {
                         this->_write_buffer.erase(this->_write_buffer.begin());
                         this->is_server_ready = false;
                     }
+                } else {
+                    if (!this->is_running){
+                        std::terminate();
+                    }
                 }
             }
 
