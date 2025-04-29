@@ -14,7 +14,7 @@ namespace Moss::Network {
 
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd == -1) {
-            throw new socketError::socketCreationError;
+            throw socketError::socketCreationError();
         }
         else {
             dprint("Connection Constructor:\tSocket successfully created..");
@@ -39,7 +39,7 @@ namespace Moss::Network {
             using namespace std::chrono_literals;
             std::this_thread::sleep_for(2.5s);
         }
-        throw new socketError::socketConnectionError;
+        throw socketError::socketConnectionError();
     }
 
     void TCP::startBufferListener(){
