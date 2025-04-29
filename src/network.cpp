@@ -31,11 +31,11 @@ namespace Moss::Network {
         int conn_try;
         for (int n = 0; n < _connection_retries; n++){
             conn_try = connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr));
-            if (conn_try < 0) {
-            } else if (conn_try != 0) {
+            if (conn_try != 0) {
                 dprint("Connection Constructor:\tConnected to the server...");
                 return sockfd;
             }
+            dprint("Connection Constructor:\tFailed: Awaiting another try...");
             using namespace std::chrono_literals;
             std::this_thread::sleep_for(2.5s);
         }
@@ -43,7 +43,9 @@ namespace Moss::Network {
     }
 
     void TCP::startBufferListener(){
+        dprint("Client:\tDefining lambda listener function...");
         auto listener = [&](){
+            dprint("Client:\tHello from listener thread!");
             char buff[65535];
 
             while (this->is_running) {
@@ -72,6 +74,7 @@ namespace Moss::Network {
             }
 
         };
+        dprint("Client:\tInserting listener thread into threadpool...");
         this->_threads.insert(this->_threads.begin(),std::thread(listener));
     }
     
