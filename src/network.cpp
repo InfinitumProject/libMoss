@@ -62,6 +62,8 @@ namespace Moss::Network {
                     }
                 }
                 if (this->_write_buffer.size()) {
+                    dprint("Client:\tWrite Buffer: ",false);
+                    dprint(this->_write_buffer[0].c_str());
                     if (this->_write_buffer[0].size() && this->is_server_ready){
                         dprint("Client:\tServer is ready and we have data to send!");
                         dprint("Client:\tsizeof(Data): ", false);
