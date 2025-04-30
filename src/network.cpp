@@ -1,5 +1,5 @@
-#include "../include/MossLib/network.hpp"
-#include "../include/MossLib/debug.hpp"
+#include "../include/libMoss/network.hpp"
+#include "../include/libMoss/debug.hpp"
 #define WAIT_SECS 2.5
 
 #ifdef __linux
@@ -16,32 +16,36 @@ namespace Moss::Network {
         if (sockfd == -1) {
             throw new socketError::socketCreationError;
         }
-        else
-            dprint("Client:\tSocket successfully created..");
+        else {
+            dprint("Connection Constructor:\tSocket successfully created..");
+        }
+        dprint("Connection Constructor:\tDoing bzero for server address...");
         bzero(&servaddr, sizeof(servaddr));
 
+        dprint("Connection Constructor:\tConfiguring server address...");
         servaddr.sin_family = AF_INET;
         servaddr.sin_addr.s_addr = inet_addr(_address.c_str());
         servaddr.sin_port = htons(_port);
 
+        dprint("Connection Constructor:\tAttempting Connection...");
+        int conn_try;
         for (int n = 0; n < _connection_retries; n++){
-            try {
-                if (connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) != 0) {
-                    throw new socketError::socketConnectionError;
-                }
-                else {
-                    dprint("Client:\tConnected to the server...");
-                    return sockfd;
-                }
-            } catch (socketError::socketConnectionError &e){
-
+            conn_try = connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr));
+            if (conn_try != 0) {
+                dprint("Connection Constructor:\tConnected to the server...");
+                return sockfd;
             }
+            dprint("Connection Constructor:\tFailed: Awaiting another try...");
+            using namespace std::chrono_literals;
+            std::this_thread::sleep_for(2.5s);
         }
         throw new socketError::socketConnectionError;
     }
 
     void TCP::startBufferListener(){
+        dprint("Client:\tDefining lambda listener function...");
         auto listener = [&](){
+            dprint("Client:\tHello from listener thread!");
             char buff[65535];
 
             while (this->is_running) {
@@ -70,6 +74,7 @@ namespace Moss::Network {
             }
 
         };
+        dprint("Client:\tInserting listener thread into threadpool...");
         this->_threads.insert(this->_threads.begin(),std::thread(listener));
     }
     

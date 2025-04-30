@@ -1,9 +1,9 @@
-modules = DataHandler network
+modules ?= network
 tests = bimap TCP/Streamlike
 
-LibName = MossLib
+LibName = libMoss
 
-ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests"
+ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests" "./build/packages"
 
 compiler?=g++
 # 
@@ -54,3 +54,35 @@ RunTests: BuildTests
 		fi; \
 	done;
 	@echo "All tests have been run"
+
+.PHONY: PackageArch
+PackageArch: build_scripts/PKGBUILD ValidateDirStruct
+	@echo "Now making Arch Linux package"
+	@makepkg -fcD ./build_scripts
+	@echo "cleaning directories"
+	@rm -rf ./build_scripts/${LibName};
+	@echo "Removing debug build"
+	@rm -f ./build_scripts/${LibName}-debug*.pkg.tar.zst
+	@echo "Moving finished package to 'build/packages'"
+	@mv ./build_scripts/${LibName}*.pkg.tar.zst ./build/packages
+
+.PHONY: PackageDeb
+PackageDeb: build_scripts/package_debian.sh ValidateDirStruct
+	@echo "Now making Debian Linux package"
+	@./build_scripts/package_debian.sh
+	@echo "Moving finished package to 'build/packages'"
+	@mv ./${LibName}*.deb ./build/packages
+
+.PHONY: Install
+Install:
+	@if [ "cat /etc/os-release | grep -i arch" ]; then \
+		echo "Appears to be Arch Linux; attempting to install with pacman"; \
+		make PackageArch; \
+		sudo pacman -U ./build/packages/${LibName}-*.pkg.tar.zst; \
+	elif [ "cat /etc/os-release | grep -i debian"]; then \
+		echo "Appears to be a Debian distro; attempting install with dpkg"; \
+		make PackageDeb; \
+		sudo dpkg -i ./build/packages/${LibName}*.deb; \
+	else \
+		echo "Distro not recognized! Cannot install automatically, you're on your own."; \
+	fi;

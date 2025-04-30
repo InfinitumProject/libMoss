@@ -19,7 +19,7 @@
 namespace Moss::Network {
 
     class TCP {
-        bool is_running = true, is_server_ready = false;
+        bool is_running = true, is_server_ready = false, is_deconstructing = false;
         int _connection_fd;
         std::vector<std::string> _write_buffer;
         std::string _read_buffer = "";
