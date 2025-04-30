@@ -1,5 +1,5 @@
 modules ?= network
-tests = bimap TCP/Streamlike
+tests = TCP
 
 LibName = libMoss
 
@@ -25,7 +25,7 @@ ValidateDirStruct:
 .PHONY: BuildObjects
 BuildObjects: ValidateDirStruct
 	@for current_module in ${modules}; do \
-		${compiler} ${CompilerArgs} -c -fPIC ./src/$$current_module.cpp -I${InludeDir} -o ./build/objects/$$current_module.o; \
+		${compiler} ${CompilerArgs} -c -fPIC ./src/$$current_module.cpp -o ./build/objects/$$current_module.o; \
 	done
 	@echo "Objects built"
 
@@ -41,7 +41,7 @@ BuildTests: BuildLib ValidateDirStruct
 		if [ ! -d "./build/tests/$$current_module" ]; then \
 			mkdir -p ./build/tests/$$current_module; \
 		fi; \
-		${compiler} ${CompilerArgs} ./tests/$$current_module/test.cpp -Wl,-rpath,\$$ORIGIN/../../lib -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
+		${compiler} ${CompilerArgs} ./tests/$$current_module/test.cpp -Wl,-rpath,\$$ORIGIN/../../lib -I${InludeDir} -L./build/lib -lMoss -o ./build/tests/$$current_module/Test; \
 	done
 	@echo "Tests built"
 
