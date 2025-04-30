@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v
+        uses: actions/checkout@v4
         with:
           sparse-checkout: |
             .github
@@ -31,7 +31,7 @@ jobs:
         run: make PackageArch PackageDebian
         
       - name: Upload Packages
-        uses: svenstaro/upload-release-action
+        uses: svenstaro/upload-release-action@v2
         with:
           name: Automatically Released Packages
           file: ./build/packages/*
