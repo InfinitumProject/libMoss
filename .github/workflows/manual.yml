@@ -1,12 +1,10 @@
-#!!!WIP Do not use yet!!!
-
-name: C++ Compile and Release
+name: Draft Release
 
 on:
   workflow_dispatch:
 
 jobs:
-  BuildLib:
+  Draft_Release:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +20,7 @@ jobs:
 
       - name: Set up GCC
         run: sudo apt-get update && sudo apt-get install -y build-essential
-
+  
       - name: Install pacman and makepkg
         run: |
           wget "https://gist.githubusercontent.com/doctorfree/d40de02e9713c991977c415dd09d39ae/raw/319be8d2bb71ef36fe939e5d85385459b3350371/install-pacman-debian.sh" -O ./install && chmod +x ./install && ./install

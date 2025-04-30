@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  BuildLib:
+  Release_Package:
     runs-on: ubuntu-latest
 
     steps:
