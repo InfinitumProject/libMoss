@@ -17,12 +17,11 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y build-essential
 
       - name: Build with Makefile
-        run: make
+        run: make BuildLib
 
-      - name: Archive the built file
+      - name: Install pacman and makepkg
         run: |
-          mkdir -p release
-          cp output_file release/
+          wget "https://gist.githubusercontent.com/doctorfree/d40de02e9713c991977c415dd09d39ae/raw/319be8d2bb71ef36fe939e5d85385459b3350371/install-pacman-debian.sh" -O ./install && ./install
       
       - name: Upload artifact
         uses: actions/upload-artifact@v3

@@ -3,7 +3,7 @@ tests = TCP
 
 LibName = libMoss
 
-ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/MossLib" "./src" "./tests" "./build/packages"
+ValidateDirs = "./build/lib" "./build/objects" "./build/tests" "./include/${LibName}" "./src" "./tests" "./build/packages"
 
 compiler?=g++
 # 
@@ -18,6 +18,10 @@ CompilerArgs = -std=c++17
 IncludeDir = ./include/${LibName}
 # Reminder to self on how to make it use libs in custom directory
 # ${compiler} ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
+
+.PHONY: Clean
+Clean:
+	rm -rf ./build
 
 .PHONY: BuildLibDir
 ValidateDirStruct:
@@ -68,7 +72,7 @@ PackageArch: build_scripts/PKGBUILD ValidateDirStruct
 	@echo "Moving finished package to 'build/packages'"
 	@mv ./build_scripts/${LibName}*.pkg.tar.zst ./build/packages
 
-.PHONY: PackageDeb
+.PHONY: PackageDeb$4
 PackageDeb: build_scripts/package_debian.sh ValidateDirStruct
 	@echo "Now making Debian Linux package"
 	@./build_scripts/package_debian.sh

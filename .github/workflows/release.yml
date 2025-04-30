@@ -1,0 +1,40 @@
+name: Release Package (on push to main)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  BuildLib:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v
+        with:
+          sparse-checkout: |
+            .github
+            src
+            build_scripts
+            include
+            makefile
+
+      - name: Set up GCC
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+  
+      - name: Install pacman and makepkg
+        run: |
+          wget "https://gist.githubusercontent.com/doctorfree/d40de02e9713c991977c415dd09d39ae/raw/319be8d2bb71ef36fe939e5d85385459b3350371/install-pacman-debian.sh" -O ./install && chmod +x ./install && ./install
+        
+      - name: Build with Makefile
+        run: make PackageArch PackageDebian
+        
+      - name: Upload Packages
+        uses: svenstaro/upload-release-action
+        with:
+          name: Automatically Released Packages
+          file: ./build/packages/*
+          file_glob: true
+          prerelease: true
+          draft: true
