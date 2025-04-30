@@ -12,6 +12,8 @@ compiler?=g++
 Debug = false
 
 CompilerArgs = -std=c++17
+
+IncludeDir = ./include/${LibName}
 # Reminder to self on how to make it use libs in custom directory
 # ${compiler} ./test.cpp -Wl,-rpath,./build/lib -L./build/lib -lMoss -o Test
 
@@ -23,13 +25,13 @@ ValidateDirStruct:
 .PHONY: BuildObjects
 BuildObjects: ValidateDirStruct
 	@for current_module in ${modules}; do \
-		${compiler} ${CompilerArgs} -c -fPIC ./src/$$current_module.cpp -o ./build/objects/$$current_module.o; \
+		${compiler} ${CompilerArgs} -c -fPIC ./src/$$current_module.cpp -I${InludeDir} -o ./build/objects/$$current_module.o; \
 	done
 	@echo "Objects built"
 
 .PHONY: BuildLib
 BuildLib: BuildObjects ValidateDirStruct
-	@${compiler} ${CompilerArgs} -shared -o ./build/lib/libMoss.so ./build/objects/*.o
+	@${compiler} ${CompilerArgs} -shared -o ./build/lib/${LibName}.so ./build/objects/*.o
 	@echo "Library '${LibName}' compiled"
 
 .PHONY: BuildTests
