@@ -6,6 +6,8 @@
 
 #include <sys/ioctl.h>
 
+using namespace Moss::Debug;
+
 namespace Moss::Network {
 
     int TCP::constructConnection(std::string _address, int _port, int _connection_retries){
@@ -62,11 +64,11 @@ namespace Moss::Network {
                     }
                 }
                 if (this->_write_buffer.size()) {
-                    dprint("Client:\tWrite Buffer: ",false);
-                    dprint(this->_write_buffer[0].c_str());
+                    dprint("Client:\tWrite Buffer: ",false,"DEBUG_SPAM");
+                    dprint(this->_write_buffer[0].c_str(),true,"DEBUG_SPAM");
                     if (this->_write_buffer[0].size() && this->is_server_ready){
                         dprint("Client:\tServer is ready and we have data to send!");
-                        dprint("Client:\tsizeof(Data): ", false);
+                        dprint("Client:\tstrlen(Data): ", false);
                         dprint(std::to_string(this->_write_buffer[0].size()).c_str());
                         write(this->_connection_fd,this->_write_buffer[0].c_str(),this->_write_buffer[0].size()+1);
                         this->_write_buffer.erase(this->_write_buffer.begin());

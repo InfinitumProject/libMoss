@@ -9,7 +9,9 @@ compiler?=g++
 # 
 # x86_64-w64-mingw32-g++-posix
 
-Debug = false
+DSpam = false
+
+Debug ?= ${DSpam}
 
 CompilerArgs = -std=c++17
 
@@ -48,7 +50,7 @@ BuildTests: BuildLib ValidateDirStruct
 .PHONY: RunTests
 RunTests: BuildTests
 	@for test in ${tests}; do \
-		DEBUG=${Debug} ./build/tests/$$test/Test; \
+		DEBUG=${Debug} DEBUG_SPAM=${DSpam} ./build/tests/$$test/Test; \
 		if [ $$? -ne 0 ]; then \
 			echo "A tested module '$$test' failed!!"; \
 		fi; \
