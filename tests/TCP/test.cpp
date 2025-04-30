@@ -5,10 +5,11 @@ using namespace Moss::Debug;
 using namespace std::chrono_literals;
 
 int server(int port) {
+    using namespace Moss::Network::Packets;
     dprint("Server:\tInitializing server...");
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(2.5s);
-    bool running = true;
+    std::atomic<bool> running = true;
     std::vector<std::thread> threads;
     int server_fd, new_socket;
     struct sockaddr_in address;
@@ -49,11 +50,11 @@ int server(int port) {
     }
 
     
-    std::function<void(int)> handler = [](int new_socket){
-        dprint("Server:\tStarting handler for new socket: \"",false); dprint(new_socket,false); dprint("\"...");
+    std::function<void(int)> handler = [&running](int new_socket){
+        dprint("Server:\tStarting handler for new socket: \"", new_socket, "\"...");
         char buffer[65535];
         for (;;){
-            write(new_socket, READY_PACKET, strlen(READY_PACKET));
+            write(new_socket, SERVER_READY, strlen(SERVER_READY));
             dprint("Server:\tSent ready signal!");
             memset(buffer,0,sizeof(buffer));
             buffer[0] = '\0';
@@ -61,16 +62,16 @@ int server(int port) {
             std::cout << "Server:\tReceived: " << buffer << std::endl;
             send(new_socket, buffer, strlen(buffer), 0);
             dprint("Server:\tMessage sent");
-            if ((strncmp(buffer, EXIT_PACKET, strlen(EXIT_PACKET))) == 0){
-                write(new_socket, EXIT_PACKET, strlen(EXIT_PACKET));
-                break;
-            }
-            if ((strncmp(buffer, STOP_PACKET, strlen(STOP_PACKET))) == 0){
-                write(new_socket, EXIT_PACKET, strlen(EXIT_PACKET));
+            if ((strncmp(buffer, SERVER_STOP, strlen(SERVER_STOP))) == 0){
+                running = false;
                 exit(0);
                 break;
             }
+            if ((strncmp(buffer, CONNECTION_TERMINATE, strlen(CONNECTION_TERMINATE))) == 0){
+                break;
+            }
         }
+        write(new_socket, CONNECTION_TERMINATE, strlen(CONNECTION_TERMINATE));
         close(new_socket);
     };
     
@@ -78,7 +79,7 @@ int server(int port) {
     // Accept connections
     while (running){
         if ((new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) >= 0) {
-            dprint("Server:\tAccepted connection: \"",false); dprint(new_socket,false); dprint("\"");
+            dprint("Server:\tAccepted connection: \"", new_socket, "\"");
             threads.push_back(std::thread(handler, new_socket));
         }
     }
@@ -101,7 +102,7 @@ int server(int port) {
 
     dprint("Server:\tChecking status of server threads...");
     if (threads.size()){
-        dprint("Server:\tWarning:\tThreadpool is larger than 0!! This may halt the program!!!");
+        dprint("Server:\tWarning:\tThreadpool is ", threads.size(), ", which is larger than 0!! This may halt the program!!!");
     }
     return 0;
 }
@@ -120,15 +121,15 @@ int main(){
         
         conn1 << "This is a test from C1.";
         conn1 << "EWAEWEADAS";
-        conn1 << EXIT_PACKET;
+        conn1 << Moss::Network::Packets::CONNECTION_TERMINATE;
         conn2 << "This is a test from C2.";
         conn2 << "Ooooh.. keysmash... ABGAJSBGJBAG!!!!";
-        conn2 << EXIT_PACKET;
+        conn2 << Moss::Network::Packets::CONNECTION_TERMINATE;
         
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1s);
         Moss::Network::TCP closer("127.0.0.1",1234);
-        closer << STOP_PACKET;
+        closer << Moss::Network::Packets::SERVER_STOP;
         e.join();
         return 0;
     } catch (...) {

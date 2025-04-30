@@ -50,26 +50,22 @@ namespace Moss::Network {
             dprint("Client:\tHello from listener thread!");
             char buff[65535];
 
-            while (this->is_running) {
+            while ((this->is_running || _write_buffer.size()) && this->_read_buffer != Moss::Network::Packets::CONNECTION_TERMINATE) {
                 bzero(buff,sizeof(buff));
                 if (this->hasReadableData()) {
                     read(this->_connection_fd,buff,this->hasReadableData());
-                    if (strcmp(buff,READY_PACKET) == 0){
+                    if (strcmp(buff,Moss::Network::Packets::SERVER_READY) == 0){
                         dprint("Client:\tServer is ready!");
                         this->is_server_ready = true;
                     } else {
-                        dprint("Client:\tRecieved readable data: ", false);
-                        dprint(buff);
+                        dprint("Client:\tRecieved readable data: ", buff);
                         this->_read_buffer = buff;
                     }
                 }
                 if (this->_write_buffer.size()) {
-                    dprint("Client:\tWrite Buffer: ",false,"DEBUG_SPAM");
-                    dprint(this->_write_buffer[0].c_str(),true,"DEBUG_SPAM");
                     if (this->_write_buffer[0].size() && this->is_server_ready){
                         dprint("Client:\tServer is ready and we have data to send!");
-                        dprint("Client:\tstrlen(Data): ", false);
-                        dprint(std::to_string(this->_write_buffer[0].size()).c_str());
+                        dprint("Client:\tstrlen(Data): ", this->_write_buffer[0].size());
                         write(this->_connection_fd,this->_write_buffer[0].c_str(),this->_write_buffer[0].size()+1);
                         this->_write_buffer.erase(this->_write_buffer.begin());
                         this->is_server_ready = false;
@@ -91,7 +87,7 @@ namespace Moss::Network {
 
     TCP::~TCP(){
         dprint("Deconstructing TCP client...");
-        this->is_running = false;
+        *(this->is_running) = false;
         for (auto &th : this->_threads){
             if (th.joinable()){
                 th.join();
