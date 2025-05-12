@@ -7,22 +7,28 @@
 #include <chrono>
 #include <thread>
 #include <functional>
+#include <atomic>
 #ifdef __linux
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #elif _WIN32
 #endif
-#define READY_PACKET "CMD_^[READY]"
-#define EXIT_PACKET "CMD_^[EXIT]"
-#define STOP_PACKET "CMD_^[STOP]"
 
 namespace Moss::Network {
 
+    namespace Packets {
+        
+        const char *SERVER_READY = "INFO_^[READY]";
+        const char *SERVER_STOP = "CMD_^[SERVER_STOP]";
+        const char *CONNECTION_TERMINATE = "CMD_^[CONNECTION_TERMINATE]";
+    }
+
     class TCP {
-        bool is_running = true, is_server_ready = false;
+        bool is_server_ready = false, is_deconstructing = false;
+        std::atomic<bool> *is_running = new std::atomic<bool>(true);
         int _connection_fd;
         std::vector<std::string> _write_buffer;
-        std::string _read_buffer = "";
+        std::string _read_buffer;
         std::vector<std::thread> _threads;
         void startBufferListener();
         

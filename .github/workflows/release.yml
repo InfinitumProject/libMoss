@@ -1,10 +1,12 @@
-name: Draft Release
+name: Release Package (on push to main)
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  Draft_Release:
+  Release_Package:
     runs-on: ubuntu-latest
 
     steps:
