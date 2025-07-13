@@ -16,7 +16,7 @@
 #define EXIT_PACKET "CMD_^[EXIT]"
 #define STOP_PACKET "CMD_^[STOP]"
 
-namespace Moss::Network {
+namespace MissMoss::Network {
 
     class TCP {
         bool is_running = true, is_server_ready = false;

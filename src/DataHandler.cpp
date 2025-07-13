@@ -5,7 +5,7 @@
 #include <nlohmann/json.hpp>
 #include "../include/libMoss/DataHandler.hpp"
 
-namespace Moss {
+namespace MissMoss {
     namespace Data {
         template <typename T1, typename T2>
         bimap<T1,T2>::bimap(){

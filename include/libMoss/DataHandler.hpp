@@ -1,7 +1,7 @@
 #pragma once
 #include <nlohmann/json.hpp>
 
-namespace Moss {
+namespace MissMoss {
     namespace Data {
         /**
          * @tparam T1 The first type in the bimap.

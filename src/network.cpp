@@ -6,7 +6,7 @@
 
 #include <sys/ioctl.h>
 
-namespace Moss::Network {
+namespace MissMoss::Network {
 
     int TCP::constructConnection(std::string _address, int _port, int _connection_retries){
         int sockfd;
