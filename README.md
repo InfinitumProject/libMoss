@@ -13,6 +13,7 @@ I (Universal82) and the other collaborators are making this library in order to 
       - [ ] Server
       - [ ] Client
     - [ ] UDP
+    - [ ] SSL/TLS
   - [ ] Scripting
     - [ ] Tokenizer
     - [ ] Parser
@@ -28,6 +29,7 @@ I (Universal82) and the other collaborators are making this library in order to 
       - [ ] Server
       - [ ] Client
     - [ ] UDP
+    - [ ] SSL/TLS
   - [ ] Scripting
     - [ ] Tokenizer
     - [ ] Parser
